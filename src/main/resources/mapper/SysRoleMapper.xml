@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.struggle.sys.mapper.SysRoleMapper">
+  <resultMap id="BaseResultMap" type="com.struggle.sys.pojo.SysRole">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="enname" jdbcType="VARCHAR" property="enname" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="sys_roleColumns">
+    id, name, enname, description, create_time
+  </sql>
+  <sql id="sys_roleDynamicWhere">
+    <where>
+      <if test="null != id and '' !=  id">AND id = #{ id}</if>
+      <if test="null != username and '' !=  username">AND username = #{ username}</if>
+      <if test="null != enname and '' !=  enname">AND enname = #{ enname}</if>
+      <if test="null != password and '' !=  password">AND password = #{ password}</if>
+      <if test="null != avatar and '' !=  avatar">AND avatar = #{ avatar}</if>
+      <if test="null != createTime and '' !=  createTime">AND create_time = #{ createTime}</if>
+      <if test="null != lastLoginTime and '' !=  lastLoginTime">AND last_login_time = #{ lastLoginTime}</if>
+      <if test="null != status and '' !=  status">AND status = #{ status}</if>
+      <if test="null != id and '' !=  id">AND id = #{ id}</if>
+      <if test="null != name and '' !=  name">AND name = #{ name}</if>
+      <if test="null != enname and '' !=  enname">AND enname = #{ enname}</if>
+      <if test="null != description and '' !=  description">AND description = #{ description}</if>
+      <if test="null != createTime and '' !=  createTime">AND create_time = #{ createTime}</if>
+	</where>
+  </sql>
+  <sql id="sys_roleDynamicLikeWhere">
+    <where>
+      <if test="null != id and '' !=  id">AND id LIKE #{ id}</if>
+      <if test="null != username and '' !=  username">AND username LIKE #{ username}</if>
+      <if test="null != enname and '' !=  enname">AND enname LIKE #{ enname}</if>
+      <if test="null != password and '' !=  password">AND password LIKE #{ password}</if>
+      <if test="null != avatar and '' !=  avatar">AND avatar LIKE #{ avatar}</if>
+      <if test="null != createTime and '' !=  createTime">AND create_time LIKE #{ createTime}</if>
+      <if test="null != lastLoginTime and '' !=  lastLoginTime">AND last_login_time LIKE #{ lastLoginTime}</if>
+      <if test="null != status and '' !=  status">AND status LIKE #{ status}</if>
+      <if test="null != id and '' !=  id">AND id LIKE #{ id}</if>
+      <if test="null != name and '' !=  name">AND name LIKE #{ name}</if>
+      <if test="null != enname and '' !=  enname">AND enname LIKE #{ enname}</if>
+      <if test="null != description and '' !=  description">AND description LIKE #{ description}</if>
+      <if test="null != createTime and '' !=  createTime">AND create_time LIKE #{ createTime}</if>
+	</where>
+  </sql>
+  <select id="listPage" parameterType="com.struggle.sys.pojo.SysRole" resultMap="BaseResultMap">
+    SELECT <include refid="sys_roleColumns" /> FROM  `sys_role` <include refid="sys_roleDynamicWhere" />
+  </select>
+  <select id="listLikePage" parameterType="com.struggle.sys.pojo.SysRole" resultMap="BaseResultMap">
+    SELECT <include refid="sys_roleColumns" /> FROM  `sys_role` <include refid="sys_roleDynamicLikeWhere" />
+  </select>
+  <select id="list" parameterType="com.struggle.sys.pojo.SysRole" resultMap="BaseResultMap">
+    SELECT <include refid="sys_roleColumns" /> FROM  `sys_role` <include refid="sys_roleDynamicWhere" />
+  </select>
+  <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT <include refid="sys_roleColumns" /> FROM  `sys_role` <include refid="sys_roleDynamicWhere" /> WHERE id = #{id}
+  </select>
+  <select id="getOne" parameterType="com.struggle.sys.pojo.SysRole" resultMap="BaseResultMap">
+    SELECT <include refid="sys_roleColumns" /> FROM  `sys_role` <include refid="sys_roleDynamicWhere" /> LIMIT 1
+  </select>
+  <select id="count" parameterType="com.struggle.sys.pojo.SysRole" resultType="java.lang.Long">
+    SELECT COUNT(1) FROM `sys_role` <include refid="sys_roleDynamicWhere" />
+  </select>
+  <select id="countLike" parameterType="com.struggle.sys.pojo.SysRole" resultType="java.lang.Long">
+    SELECT COUNT(1) FROM `sys_role` <include refid="sys_roleDynamicLikeWhere" />
+  </select>
+
+  <!-- 根据用户Id获取角色信息 -->
+  <select id="getUserRoleByUserId" resultMap="BaseResultMap">
+     SELECT
+       `name`,
+       enname
+     FROM
+         sys_role r
+     LEFT JOIN sys_user_role ur ON r.id = ur.role_id
+     WHERE ur.user_id = #{userId}
+  </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <sql id="save_sys_role_columns">
+    INSERT INTO `sys_role`(
+		name, enname, description, create_time
+	) VALUES
+  </sql>
+  <sql id="save_sys_role_values">
+    (
+	  #{ name, jdbcType=VARCHAR},
+	  #{ enname, jdbcType=VARCHAR},
+	  #{ description, jdbcType=VARCHAR},
+	  #{ createTime, jdbcType=TIMESTAMP}
+	)
+  </sql>
+  <sql id="batch_save_sys_role_values">
+    (
+	  #{ item.name, jdbcType=VARCHAR},
+	  #{ item.enname, jdbcType=VARCHAR},
+	  #{ item.description, jdbcType=VARCHAR},
+	  #{ item.createTime, jdbcType=TIMESTAMP}
+	)
+  </sql>
+  <insert id="save" keyProperty="id" parameterType="com.struggle.sys.pojo.SysRole" useGeneratedKeys="true">
+    <include refid="save_sys_role_columns" /><include refid="save_sys_role_values" />
+  </insert>
+  <insert id="saveBatch" parameterType="list">
+    <include refid="save_sys_role_columns"/>
+	<foreach collection="list" index="index" item="item" separator=",">
+		<include refid="batch_save_sys_role_values"/>
+	</foreach>
+  </insert>
+  <sql id="sys_roleUpdate">
+    UPDATE `sys_role` 
+	<set> 
+      <if test="null != name">name = #{ name, jdbcType=VARCHAR },</if>
+      <if test="null != enname">enname = #{ enname, jdbcType=VARCHAR },</if>
+      <if test="null != description">description = #{ description, jdbcType=VARCHAR },</if>
+      <if test="null != createTime">create_time = #{ createTime, jdbcType=TIMESTAMP }</if>
+	</set>
+	WHERE id = #{id}
+  </sql>
+  <sql id="sys_roleUpdateBatch">
+    UPDATE `sys_role` 
+	<set> 
+      <if test="null != item.name">name = #{ item.name, jdbcType=VARCHAR },</if>
+      <if test="null != item.enname">enname = #{ item.enname, jdbcType=VARCHAR },</if>
+      <if test="null != item.description">description = #{ item.description, jdbcType=VARCHAR },</if>
+      <if test="null != item.createTime">create_time = #{ item.createTime, jdbcType=TIMESTAMP }</if>
+	</set>
+	WHERE id = #{ item.id }
+  </sql>
+  <update id="update" parameterType="com.struggle.sys.pojo.SysRole">
+    <include refid="sys_roleUpdate" />
+  </update>
+  <update id="updateBatch" parameterType="list">
+    <foreach collection="list" index="index" item="item" open="" separator=";" close="">
+	  	<include refid="sys_roleUpdateBatch" />
+	</foreach>
+  </update>
+  <delete id="delete">
+    DELETE FROM `sys_user` WHERE id = #{id}DELETE FROM `sys_role` WHERE id = #{id}
+  </delete>
+</mapper>

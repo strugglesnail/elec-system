@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.struggle.sys.mapper.SysMenuMapper">
+    <resultMap id="BaseResultMap" type="com.struggle.sys.pojo.SysMenu">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="enname" jdbcType="VARCHAR" property="enname" />
+        <result column="component" jdbcType="VARCHAR" property="component" />
+        <result column="keep_alive" jdbcType="BIT" property="keepAlive" />
+        <result column="path" jdbcType="VARCHAR" property="path" />
+        <result column="url" jdbcType="VARCHAR" property="url" />
+        <result column="icon_url" jdbcType="VARCHAR" property="iconUrl" />
+        <result column="require_auth" jdbcType="BIT" property="requireAuth" />
+        <result column="type" jdbcType="BIT" property="type" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="available" jdbcType="TINYINT" property="available" />
+    </resultMap>
+    <sql id="sys_menuColumns">
+    id, parent_id, name, enname, component, keep_alive, path, url, icon_url, require_auth, type, description, available
+  </sql>
+    <sql id="sys_menuDynamicWhere">
+        <where>
+            <if test="null != id and '' !=  id">AND id = #{ id}</if>
+            <if test="null != name and '' !=  name">AND name = #{ name}</if>
+            <if test="null != enname and '' !=  enname">AND enname = #{ enname}</if>
+            <if test="null != description and '' !=  description">AND description = #{ description}</if>
+            <if test="null != createTime and '' !=  createTime">AND create_time = #{ createTime}</if>
+            <if test="null != id and '' !=  id">AND id = #{ id}</if>
+            <if test="null != parentId and '' !=  parentId">AND parent_id = #{ parentId}</if>
+            <if test="null != name and '' !=  name">AND name = #{ name}</if>
+            <if test="null != enname and '' !=  enname">AND enname = #{ enname}</if>
+            <if test="null != component and '' !=  component">AND component = #{ component}</if>
+            <if test="null != keepAlive and '' !=  keepAlive">AND keep_alive = #{ keepAlive}</if>
+            <if test="null != path and '' !=  path">AND path = #{ path}</if>
+            <if test="null != url and '' !=  url">AND url = #{ url}</if>
+            <if test="null != iconUrl and '' !=  iconUrl">AND icon_url = #{ iconUrl}</if>
+            <if test="null != requireAuth and '' !=  requireAuth">AND require_auth = #{ requireAuth}</if>
+            <if test="null != type and '' !=  type">AND type = #{ type}</if>
+            <if test="null != description and '' !=  description">AND description = #{ description}</if>
+            <if test="null != available and '' !=  available">AND available = #{ available}</if>
+        </where>
+    </sql>
+    <sql id="sys_menuDynamicLikeWhere">
+        <where>
+            <if test="null != id and '' !=  id">AND id LIKE #{ id}</if>
+            <if test="null != name and '' !=  name">AND name LIKE #{ name}</if>
+            <if test="null != enname and '' !=  enname">AND enname LIKE #{ enname}</if>
+            <if test="null != description and '' !=  description">AND description LIKE #{ description}</if>
+            <if test="null != createTime and '' !=  createTime">AND create_time LIKE #{ createTime}</if>
+            <if test="null != id and '' !=  id">AND id LIKE #{ id}</if>
+            <if test="null != parentId and '' !=  parentId">AND parent_id LIKE #{ parentId}</if>
+            <if test="null != name and '' !=  name">AND name LIKE #{ name}</if>
+            <if test="null != enname and '' !=  enname">AND enname LIKE #{ enname}</if>
+            <if test="null != component and '' !=  component">AND component LIKE #{ component}</if>
+            <if test="null != keepAlive and '' !=  keepAlive">AND keep_alive LIKE #{ keepAlive}</if>
+            <if test="null != path and '' !=  path">AND path LIKE #{ path}</if>
+            <if test="null != url and '' !=  url">AND url LIKE #{ url}</if>
+            <if test="null != iconUrl and '' !=  iconUrl">AND icon_url LIKE #{ iconUrl}</if>
+            <if test="null != requireAuth and '' !=  requireAuth">AND require_auth LIKE #{ requireAuth}</if>
+            <if test="null != type and '' !=  type">AND type LIKE #{ type}</if>
+            <if test="null != description and '' !=  description">AND description LIKE #{ description}</if>
+            <if test="null != available and '' !=  available">AND available LIKE #{ available}</if>
+        </where>
+    </sql>
+    <select id="listPage" parameterType="com.struggle.sys.pojo.SysMenu" resultMap="BaseResultMap">
+        SELECT <include refid="sys_menuColumns" /> FROM  `sys_menu` <include refid="sys_menuDynamicWhere" />
+    </select>
+    <select id="listLikePage" parameterType="com.struggle.sys.pojo.SysMenu" resultMap="BaseResultMap">
+        SELECT <include refid="sys_menuColumns" /> FROM  `sys_menu` <include refid="sys_menuDynamicLikeWhere" />
+    </select>
+    <select id="list" parameterType="com.struggle.sys.pojo.SysMenu" resultMap="BaseResultMap">
+        SELECT <include refid="sys_menuColumns" /> FROM  `sys_menu` <include refid="sys_menuDynamicWhere" />
+    </select>
+    <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="sys_menuColumns" /> FROM  `sys_menu` <include refid="sys_menuDynamicWhere" /> WHERE id = #{id}
+    </select>
+    <select id="getOne" parameterType="com.struggle.sys.pojo.SysMenu" resultMap="BaseResultMap">
+        SELECT <include refid="sys_menuColumns" /> FROM  `sys_menu` <include refid="sys_menuDynamicWhere" /> LIMIT 1
+    </select>
+    <select id="count" parameterType="com.struggle.sys.pojo.SysMenu" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM `sys_menu` <include refid="sys_menuDynamicWhere" />
+    </select>
+    <select id="countLike" parameterType="com.struggle.sys.pojo.SysMenu" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM `sys_menu` <include refid="sys_menuDynamicLikeWhere" />
+    </select>
+
+    <!-- 自定义SQL -->
+    <select id="getUserMenuById" resultMap="BaseResultMap">
+        SELECT
+          m.id,
+          m.parent_id,
+          m.name,
+          m.path,
+          m.url,
+          m.component,
+          m.keep_alive,
+          m.require_auth
+        FROM sys_user u
+        RIGHT JOIN sys_user_role ur ON u.id = ur.user_id
+        RIGHT JOIN sys_menu r ON ur.role_id = r.id
+        RIGHT JOIN sys_role_menu rm ON rm.role_id = r.id
+        RIGHT JOIN sys_menu m On m.id = rm.menu_id
+        WHERE u.id = #{userId}
+    </select>
+
+
+    <!-- 获取菜单对应的角色 -->
+    <resultMap id="MenuWithRoleResultMap" type="com.struggle.sys.model.dto.SysMenuRoleDTO" extends="BaseResultMap">
+        <collection property="roles" ofType="com.struggle.sys.pojo.SysRole">
+            <id column="rid" property="id"/>
+            <result column="roleName" property="name"/>
+            <result column="enname" property="enname"/>
+        </collection>
+    </resultMap>
+    <select id="getMenuWithRole" resultMap="MenuWithRoleResultMap">
+        SELECT
+          m.id,
+          m.parent_id,
+          m.name,
+          m.path,
+          m.url,
+          m.component,
+          m.keep_alive,
+          m.require_auth,
+          r.id rid,
+          r.name roleName,
+          r.enname
+        FROM sys_menu m
+        LEFT JOIN sys_role_menu rm ON m.id = rm.menu_id
+        LEFT JOIN sys_role r ON rm.role_id = r.id
+    </select>
+
+
+
+
+    <sql id="save_sys_menu_columns">
+    INSERT INTO `sys_menu`(
+		parent_id, name, enname, component, keep_alive, path, url, icon_url, require_auth, type, description, available
+	) VALUES
+  </sql>
+
+
+    <sql id="save_sys_menu_values">
+    (
+	  #{ parentId, jdbcType=BIGINT},
+	  #{ name, jdbcType=VARCHAR},
+	  #{ enname, jdbcType=VARCHAR},
+	  #{ component, jdbcType=VARCHAR},
+	  #{ keepAlive, jdbcType=BIT},
+	  #{ path, jdbcType=VARCHAR},
+	  #{ url, jdbcType=VARCHAR},
+	  #{ iconUrl, jdbcType=VARCHAR},
+	  #{ requireAuth, jdbcType=BIT},
+	  #{ type, jdbcType=BIT},
+	  #{ description, jdbcType=VARCHAR},
+	  #{ available, jdbcType=TINYINT}
+	)
+  </sql>
+
+    <sql id="batch_save_sys_menu_values">
+    (
+	  #{ item.parentId, jdbcType=BIGINT},
+	  #{ item.name, jdbcType=VARCHAR},
+	  #{ item.enname, jdbcType=VARCHAR},
+	  #{ item.component, jdbcType=VARCHAR},
+	  #{ item.keepAlive, jdbcType=BIT},
+	  #{ item.path, jdbcType=VARCHAR},
+	  #{ item.url, jdbcType=VARCHAR},
+	  #{ item.iconUrl, jdbcType=VARCHAR},
+	  #{ item.requireAuth, jdbcType=BIT},
+	  #{ item.type, jdbcType=BIT},
+	  #{ item.description, jdbcType=VARCHAR},
+	  #{ item.available, jdbcType=TINYINT}
+	)
+  </sql>
+
+
+    <insert id="save" keyProperty="id" parameterType="com.struggle.sys.pojo.SysMenu" useGeneratedKeys="true">
+        <include refid="save_sys_menu_columns" /><include refid="save_sys_menu_values" />
+    </insert>
+
+    <!--<insert id="saveBatch" parameterType="list">-->
+        <!--<include refid="save_sys_menu_columns"/>-->
+        <!--<foreach collection="list" index="index" item="item" separator=",">-->
+            <!--<include refid="batch_save_sys_menu_values"/>-->
+        <!--</foreach>-->
+    <!--</insert>-->
+
+
+    <sql id="sys_menuUpdate">
+        UPDATE `sys_menu`
+        <set>
+            <if test="null != parentId">parent_id = #{ parentId, jdbcType=BIGINT },</if>
+            <if test="null != name">name = #{ name, jdbcType=VARCHAR },</if>
+            <if test="null != enname">enname = #{ enname, jdbcType=VARCHAR },</if>
+            <if test="null != component">component = #{ component, jdbcType=VARCHAR },</if>
+            <if test="null != keepAlive">keep_alive = #{ keepAlive, jdbcType=BIT },</if>
+            <if test="null != path">path = #{ path, jdbcType=VARCHAR },</if>
+            <if test="null != url">url = #{ url, jdbcType=VARCHAR },</if>
+            <if test="null != iconUrl">icon_url = #{ iconUrl, jdbcType=VARCHAR },</if>
+            <if test="null != requireAuth">require_auth = #{ requireAuth, jdbcType=BIT },</if>
+            <if test="null != type">type = #{ type, jdbcType=BIT },</if>
+            <if test="null != description">description = #{ description, jdbcType=VARCHAR },</if>
+            <if test="null != available">available = #{ available, jdbcType=TINYINT }</if>
+        </set>
+        WHERE id = #{id}
+    </sql>
+    <sql id="sys_menuUpdateBatch">
+        UPDATE `sys_menu`
+        <set>
+            <if test="null != item.parentId">parent_id = #{ item.parentId, jdbcType=BIGINT },</if>
+            <if test="null != item.name">name = #{ item.name, jdbcType=VARCHAR },</if>
+            <if test="null != item.enname">enname = #{ item.enname, jdbcType=VARCHAR },</if>
+            <if test="null != item.component">component = #{ item.component, jdbcType=VARCHAR },</if>
+            <if test="null != item.keepAlive">keep_alive = #{ item.keepAlive, jdbcType=BIT },</if>
+            <if test="null != item.path">path = #{ item.path, jdbcType=VARCHAR },</if>
+            <if test="null != item.url">url = #{ item.url, jdbcType=VARCHAR },</if>
+            <if test="null != item.iconUrl">icon_url = #{ item.iconUrl, jdbcType=VARCHAR },</if>
+            <if test="null != item.requireAuth">require_auth = #{ item.requireAuth, jdbcType=BIT },</if>
+            <if test="null != item.type">type = #{ item.type, jdbcType=BIT },</if>
+            <if test="null != item.description">description = #{ item.description, jdbcType=VARCHAR },</if>
+            <if test="null != item.available">available = #{ item.available, jdbcType=TINYINT }</if>
+        </set>
+        WHERE id = #{ item.id }
+    </sql>
+    <update id="update" parameterType="com.struggle.sys.pojo.SysMenu">
+        <include refid="sys_menuUpdate" />
+    </update>
+    <update id="updateBatch" parameterType="list">
+        <foreach collection="list" index="index" item="item" open="" separator=";" close="">
+            <include refid="sys_menuUpdateBatch" />
+        </foreach>
+    </update>
+    <delete id="delete">
+    DELETE FROM `sys_role` WHERE id = #{id}DELETE FROM `sys_menu` WHERE id = #{id}
+  </delete>
+</mapper>
