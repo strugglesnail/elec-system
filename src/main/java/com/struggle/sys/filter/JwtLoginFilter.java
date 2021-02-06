@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -38,46 +39,48 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
 
 
-
-
     public JwtLoginFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager) {
         super(new AntPathRequestMatcher(defaultFilterProcessesUrl));
         setAuthenticationManager(authenticationManager);
     }
 
 
-    // 认证
+    // 登录认证
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
         return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
     }
 
-    // 成功返回信息
+    // 登录成功返回信息
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
         String name = authResult.getName();
         String[] split = name.split(",");
-        String authorityStr = authorities.stream().map(auth -> auth.getAuthority()).collect(Collectors.joining(","));
-        String jwt = createAccessToken(split, authorityStr);
+        UserDetails userDetails = User.builder().username(split[1]).authorities(authorities).build();
 
-        response.setContentType("application/json;charset=utf-8");
-        PrintWriter writer = response.getWriter();
-        writer.write(JSON.toJSONString(TokenResponse.createBySuccessMessage(jwt, Long.valueOf(split[0]))));
-        writer.flush();
-        writer.close();
+        // 创建accessToken
+        String accessToken = JwtUtils.createAccessToken(userDetails);
+
+        // 创建refreshToken
+        String refreshToken = JwtUtils.createRefreshToken(split[1]);
+
+        // 存入redis
+        ///////////
+        ///////////
+
+        // 启动定时任务（判断refreshToken超时时间刷新accessToken：可以第三方调用）
+
+        // 退                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      出操作
+
+
+        // 响应登录信息
+        JwtUtils.writerToJson(response, TokenResponse.createBySuccessMessage(accessToken, Long.valueOf(split[0])));
     }
 
-    private String createAccessToken(String[] split, String authorities) {
-        return Jwts.builder()
-                .claim("authorities", authorities)
-                .setId(split[0])
-                .setSubject(split[1])
-                .setExpiration(new Date(System.currentTimeMillis() + 120*1000))
-                .signWith(JwtUtils.getSecretKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
+
+
 
     // 登录失败返回信息
     @Override
