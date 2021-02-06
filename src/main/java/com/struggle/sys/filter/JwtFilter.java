@@ -35,17 +35,16 @@ public class JwtFilter extends GenericFilterBean {
     private CustomAuthenticationEntryPoint authenticationEntryPoint = new CustomAuthenticationEntryPoint();
 
 
+    // token过滤
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
+        //
 
-//        if (SecurityContextHolder.getContext().getAuthentication() != null) {
-//            filterChain.doFilter(request, servletResponse);
-//            return;
-//        }
+
         String author = request.getHeader("Authorization");
         if (StringUtils.hasText(author) && author.startsWith("Bearer")) {
             Claims claims = null;
