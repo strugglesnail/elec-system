@@ -47,14 +47,14 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     // 登录认证
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
         LoginUser user = new ObjectMapper().readValue(request.getInputStream(), LoginUser.class);
         return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
     }
 
     // 登录成功返回信息
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
         String name = authResult.getName();
         String[] split = name.split(",");
@@ -69,8 +69,8 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         String refreshToken = JwtUtils.createRefreshToken(split[1]);
 
         // 存入redis
-        redisService.set(Constants.JWT_ACCESS_TOKEN_REDIS_KEY, accessToken, Constants.JWT_ACCESS_TOKEN_EXPIRE);
-        redisService.set(Constants.JWT_REFRESH_TOKEN_REDIS_KEY, refreshToken, Constants.JWT_REFRESH_TOKEN_EXPIRE);
+        redisService.set(Constants.JWT_ACCESS_TOKEN_EXPIRE_KEY, accessToken, Constants.JWT_ACCESS_TOKEN_EXPIRE);
+        redisService.set(Constants.JWT_REFRESH_TOKEN_EXPIRE_KEY, refreshToken, Constants.JWT_REFRESH_TOKEN_EXPIRE);
 
         // 启动定时任务（判断refreshToken超时时间刷新accessToken：可以第三方调用）
 

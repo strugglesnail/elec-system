@@ -34,9 +34,9 @@ public class UserService implements UserDetailsService {
 
     // 加载用户信息
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String account) throws UsernameNotFoundException {
         // 根据用户名称获取用户信息
-        SysUser sysUser = sysUserService.getUserByUserName(username);
+        SysUser sysUser = sysUserService.getUserByAccount(account);
         // 授权集合
         List<GrantedAuthority> grantedAuthorities = Lists.newArrayList();
 
@@ -51,6 +51,6 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("");
         }
         // 返回当前用户账号密码及角色信息
-        return new User(sysUser.getId() + "," + sysUser.getUsername(), sysUser.getPassword(), grantedAuthorities);
+        return new User(sysUser.getId() + "," + sysUser.getAccount(), sysUser.getPassword(), grantedAuthorities);
     }
 }

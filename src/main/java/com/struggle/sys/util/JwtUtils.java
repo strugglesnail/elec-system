@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,11 +32,15 @@ public class JwtUtils {
 
     // 创建accessToken
     public static String createAccessToken(UserDetails userDetails) {
-        String authorities = userDetails.getAuthorities().stream().map(auth -> auth.getAuthority()).collect(Collectors.joining(","));
-        return Jwts.builder()
+        String[] userInfo = userDetails.getUsername().split(",");
+        Long userId = Long.valueOf(userInfo[0]);
+        String account = userInfo[1];
+                String authorities = userDetails.getAuthorities().stream().map(auth -> auth.getAuthority()).collect(Collectors.joining(","));
+        return Constants.JWT_BEARER + Jwts.builder()
                 .claim("authorities", authorities)
+                .claim("userId", userId)
 //                .setId(split[0])
-                .setSubject(userDetails.getUsername())
+                .setSubject(account)
                 .setExpiration(new Date(System.currentTimeMillis() + Constants.JWT_ACCESS_TOKEN_EXPIRE * 1000))
                 .signWith(JwtUtils.getSecretKey(), SignatureAlgorithm.HS256)
                 .compact();
@@ -42,8 +48,8 @@ public class JwtUtils {
 
 
     // 创建refreshToken
-    public static String createRefreshToken(String username) {
-        return Jwts.builder().setSubject(username).setIssuedAt(new Date(System.currentTimeMillis()))
+    public static String createRefreshToken(String account) {
+        return Jwts.builder().setSubject(account).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + Constants.JWT_REFRESH_TOKEN_EXPIRE * 1000))
                 .compact();
     }
@@ -90,8 +96,13 @@ public class JwtUtils {
         return secretKey;
     }
 
-    public static UserDetails getUserDetails(String username, String password, Collection<GrantedAuthority> authorities) {
-        return User.builder().username(username).password(password).authorities(authorities).build();
+    public static UserDetails getUserDetails(String account, String password, Collection<GrantedAuthority> authorities) {
+        return User.builder().username(account).password(password).authorities(authorities).build();
+    }
+
+    // 获取用户权限信息+
+    public static List<GrantedAuthority> getGrantedAuthorities(Claims claims) {
+        return AuthorityUtils.commaSeparatedStringToAuthorityList((String) claims.get("authorities"));
     }
 
     // 响应数据

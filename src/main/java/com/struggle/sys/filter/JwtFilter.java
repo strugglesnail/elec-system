@@ -1,9 +1,12 @@
 package com.struggle.sys.filter;
 
 import com.struggle.sys.common.Constants;
+import com.struggle.sys.pojo.SysUser;
 import com.struggle.sys.security.LoginAuthenticationEntryPoint;
 import com.struggle.sys.security.TokenAuthenticationEntryPoint;
 import com.struggle.sys.service.RedisService;
+import com.struggle.sys.service.SysUserService;
+import com.struggle.sys.service.UserService;
 import com.struggle.sys.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -44,6 +47,9 @@ public class JwtFilter extends GenericFilterBean {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private UserService userService;
+
     // 用户信息
 
 
@@ -60,60 +66,57 @@ public class JwtFilter extends GenericFilterBean {
         // 从头信息获取accessToken
         String accessToken = request.getHeader("Authorization");
 
-        // 从redis获取refreshToken(如果过期，则获取的Token为空)
-        String cacheRefreshToken = redisService.get(Constants.JWT_REFRESH_TOKEN_REDIS_KEY, String.class);
+        // 从redis获取accessToken
+        String cacheAccessToken = redisService.get(Constants.JWT_ACCESS_TOKEN_KEY, String.class);
+
 
         // 判断refreshToken是否存在：如果存在，则继续执行，否则该请求没有授权
-        if (StringUtils.isEmpty(refreshToken) || StringUtils.isEmpty(accessToken)) {
+        if (StringUtils.isEmpty(refreshToken) || StringUtils.isEmpty(accessToken) || StringUtils.isEmpty(cacheAccessToken)) {
             authenticationEntryPoint.commence(request, response, new AuthenticationCredentialsNotFoundException(null));
             return;
         }
 
-        // 判断cacheRefreshToken是否存在：如果不存在，则说明过期需要重新登陆
-        if (StringUtils.isEmpty(cacheRefreshToken)) {
+        // 从redis获取refreshToken(如果过期，则获取的Token为空)
+        String cacheRefreshToken = redisService.get(Constants.JWT_REFRESH_TOKEN_KEY, String.class);
+
+        // cacheRefreshToken不存在或过期，则需要重新登陆
+        if (StringUtils.isEmpty(cacheRefreshToken) || JwtUtils.isTokenExpired(cacheRefreshToken)) {
             authenticationEntryPoint.commence(request, response, new CredentialsExpiredException(null));
             return;
         }
 
-        // 客户端refreshToken与服务端refreshToken不一致
-        if (!cacheRefreshToken.equals(refreshToken)) {
+        // 【客户端refreshToken与服务端refreshToken不一致】 或者 【客户端accessToken与服务端accessToken不一致】
+        if (!cacheRefreshToken.equals(refreshToken) || !cacheAccessToken.equals(accessToken)) {
             authenticationEntryPoint.commence(request, response, new InsufficientAuthenticationException("身份验证信息不足"));
             return;
         }
 
-
-        // 从redis获取accessToken
-        String cacheAccessToken = redisService.get(Constants.JWT_ACCESS_TOKEN_REDIS_KEY, String.class);
-
-
-        // 如果accessToken不存在，则已经过期，需要重新创建accessToken
-        if (StringUtils.isEmpty(cacheAccessToken)) {
-            UserDetails userDetails = JwtUtils.getUserDetails();
+        // 根据token获取用户信息
+        Claims claims = getClaims(cacheAccessToken);
+        String account = claims.getSubject();;
+        List<GrantedAuthority> authorities = null;
+        // accessToken过期，需要重新创建accessToken
+        if (JwtUtils.isTokenExpired(cacheAccessToken)) {
+            // 获取数据库用户信息
+            UserDetails userDetails = userService.loadUserByUsername(account);
+            authorities = (List<GrantedAuthority>) userDetails.getAuthorities();
+            // 创建新的token
             accessToken = JwtUtils.createAccessToken(userDetails);
+            redisService.set(Constants.JWT_ACCESS_TOKEN_KEY, accessToken);
+        } else {
+            // cacheAccessToken没过期情况下+
+            authorities = JwtUtils.getGrantedAuthorities(claims);
         }
-        // 1、如果已经过期，则重新创建accessToken
-        // 2、如果未过期，则放开请求API
 
 
 
 
-        if (accessToken.startsWith("Bearer")) {
-            // 获取当前用户信息
-            Claims claims = getClaims(accessToken);
-
-            // 获取当前登录的用户
-            String username = claims.getSubject();
-
-            // 获取当前用户权限
-            List<GrantedAuthority> authorities =
-                    AuthorityUtils.commaSeparatedStringToAuthorityList((String) claims.get("authorities"));
-
-            // 保存到上下文
-            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(username, null, authorities));
-        }
+        // 保存到上下文
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(account, null, authorities));
 
         filterChain.doFilter(request, servletResponse);
     }
+
 
     // 解析Token获取用户信息
     private Claims getClaims(String token) throws CredentialsExpiredException {

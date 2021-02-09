@@ -17,10 +17,10 @@ public class SysUserService {
     private SysUserMapper sysUserMapper;
 
 
-    // 根据用户名称获取用户信息
-    public SysUser getUserByUserName(String userName) {
+    // 根据用户账号称获取用户信息
+    public SysUser getUserByAccount(String account) {
         SysUser sysUser = new SysUser();
-        sysUser.setUsername(userName);
+        sysUser.setAccount(account);
         return sysUserMapper.getOne(sysUser);
     }
 

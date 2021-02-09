@@ -9,10 +9,11 @@ public class SysUser {
 
     private Long id;
 
+    // 用户名称
     private String username;
 
-    //用户英文名称
-    private String enname;
+    //用户账号
+    private String account;
 
     private String password;
 
@@ -56,22 +57,12 @@ public class SysUser {
         this.username = username;
     }
 
-    /**
-     * 获取用户英文名称
-     *
-     * @return enname - 用户英文名称
-     */
-    public String getEnname() {
-        return enname;
+    public String getAccount() {
+        return account;
     }
 
-    /**
-     * 设置用户英文名称
-     *
-     * @param enname 用户英文名称
-     */
-    public void setEnname(String enname) {
-        this.enname = enname;
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     /**
