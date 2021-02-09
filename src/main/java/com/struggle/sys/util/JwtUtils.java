@@ -6,6 +6,8 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.crypto.SecretKey;
@@ -13,7 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Date;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -24,22 +28,23 @@ import java.util.stream.Collectors;
 public class JwtUtils {
 
 
-    // 创建Token
+    // 创建accessToken
     public static String createAccessToken(UserDetails userDetails) {
         String authorities = userDetails.getAuthorities().stream().map(auth -> auth.getAuthority()).collect(Collectors.joining(","));
         return Jwts.builder()
                 .claim("authorities", authorities)
 //                .setId(split[0])
                 .setSubject(userDetails.getUsername())
-                .setExpiration(new Date(System.currentTimeMillis() + Constants.JWT_ACCESS_TOKEN))
+                .setExpiration(new Date(System.currentTimeMillis() + Constants.JWT_ACCESS_TOKEN_EXPIRE * 1000))
                 .signWith(JwtUtils.getSecretKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
 
+    // 创建refreshToken
     public static String createRefreshToken(String username) {
         return Jwts.builder().setSubject(username).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + Constants.JWT_REFRESH_TOKEN))
+                .setExpiration(new Date(System.currentTimeMillis() + Constants.JWT_REFRESH_TOKEN_EXPIRE * 1000))
                 .compact();
     }
 
@@ -50,7 +55,7 @@ public class JwtUtils {
         try {
             claims = Jwts.parser()
                     .setSigningKey(getSecretKey()).
-                            parseClaimsJws(token.replace("Bearer", "")).getBody();
+                            parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException ejx) {
             ejx.printStackTrace();
             throw new CredentialsExpiredException("Token Time Out!");
@@ -61,10 +66,32 @@ public class JwtUtils {
         return claims;
     }
 
+    // 检查Token是否已过期
+    public static Boolean isTokenExpired(String token) {
+        final Date expiration = getExpirationDateFromToken(token);
+        return expiration.before(new Date());
+    }
+
+    // 从Token中检索到期日期
+    public static Date getExpirationDateFromToken(String token) {
+        return getClaimFromToken(token, Claims::getExpiration);
+    }
+
+    // 从Token中获取指定的信息：Claims::getExpiration
+    public static <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = parseToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    // 获取密钥
     public static SecretKey getSecretKey() {
         byte[] bytes = DatatypeConverter.parseBase64Binary(Constants.JWT_SECRET);
         SecretKey secretKey = Keys.hmacShaKeyFor(bytes);
         return secretKey;
+    }
+
+    public static UserDetails getUserDetails(String username, String password, Collection<GrantedAuthority> authorities) {
+        return User.builder().username(username).password(password).authorities(authorities).build();
     }
 
     // 响应数据

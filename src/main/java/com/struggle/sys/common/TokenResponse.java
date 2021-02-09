@@ -55,6 +55,9 @@ public class TokenResponse<T> implements Serializable{
         return new TokenResponse(TokenCode.SUCCESS.getCode(), TokenCode.SUCCESS.getDesc(), token, userId);
 
     }
+    public static <T> TokenResponse<T> createByErrorMessage(String msg) {
+        return new TokenResponse(TokenCode.ERROR.getCode(), msg);
+    }
 
 
     // 没有权限状态
@@ -65,6 +68,15 @@ public class TokenResponse<T> implements Serializable{
     // 没有授权状态
     public static <T> TokenResponse<T> createByUnauthorized() {
         return new TokenResponse(TokenCode.UNAUTHORIZED.getCode(), TokenCode.UNAUTHORIZED.getDesc());
+    }
+    // 没有授权状态
+    public static <T> TokenResponse<T> createByUnauthorized(String msg) {
+        return new TokenResponse(TokenCode.UNAUTHORIZED.getCode(), msg);
+    }
+
+    // 登陆超时
+    public static <T> TokenResponse<T> createByLoginExpired() {
+        return new TokenResponse(TokenCode.LOGIN_EXPIRED.getCode(), TokenCode.UNAUTHORIZED.getDesc());
     }
 
 

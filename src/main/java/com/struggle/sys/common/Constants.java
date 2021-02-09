@@ -3,8 +3,15 @@ package com.struggle.sys.common;
 public interface Constants {
 
     String JWT_SECRET = "C*F-JaNdRgUkXn2r5u8xC*F-JaNdRgUkXn2r5u8xC*F-JaNdRgUkXn2r5u8xC*F-JaNdRgUkXn2r5u8xC*F-JaNdRgUkXn2r5u8xC*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w";
-    int JWT_ACCESS_TOKEN = 10 * 60 * 1000; // 10分钟
-    int JWT_REFRESH_TOKEN = 24 * 60 * 60 * 7 * 1000; // 7天
+
+    Long JWT_ACCESS_TOKEN_EXPIRE = 10 * 60L; // 10分钟
+    String JWT_ACCESS_TOKEN_REDIS_KEY = "accessToken";
+
+    Long JWT_REFRESH_TOKEN_EXPIRE = 24 * 60 * 60 * 7L; // 7天
+
+    String JWT_REFRESH_TOKEN_REDIS_KEY = "refreshToken";
+
+
 
     String GET_SUCCESS_MSG = "获取成功！";
     String SAVE_SUCCESS_MSG = "保存成功！";

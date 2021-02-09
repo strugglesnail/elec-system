@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2021/1/25 22:58
  * @desc
  */
-public class User implements UserDetails {
+public class LoginUser implements UserDetails {
 
 
     private String username;
@@ -21,6 +21,14 @@ public class User implements UserDetails {
     // 用户权限
     private List<GrantedAuthority> authorities;
 
+    public LoginUser() {
+    }
+
+    public LoginUser(String username, String password, List<GrantedAuthority> authorities) {
+        this.username = username;
+        this.password = password;
+        this.authorities = authorities;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

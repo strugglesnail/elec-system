@@ -1,13 +1,13 @@
 package com.struggle.sys.filter;
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.struggle.sys.common.Constants;
 import com.struggle.sys.common.TokenResponse;
-//import com.struggle.sys.model.User;
-import com.struggle.sys.security.CustomAuthenticationEntryPoint;
+import com.struggle.sys.model.LoginUser;
+import com.struggle.sys.security.LoginAuthenticationEntryPoint;
+import com.struggle.sys.service.RedisService;
 import com.struggle.sys.util.JwtUtils;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,19 +23,20 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Collection;
-import java.util.Date;
-import java.util.stream.Collectors;
 
 /**
  * @auther strugglesnail
  * @date 2021/1/25 23:01
  * @desc Jwt登录过滤器
  */
+//@Component
 public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    private CustomAuthenticationEntryPoint authenticationEntryPoint = new CustomAuthenticationEntryPoint();
+    @Autowired
+    private RedisService redisService;
+
+    private LoginAuthenticationEntryPoint authenticationEntryPoint = new LoginAuthenticationEntryPoint();
 
 
 
@@ -44,11 +45,10 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         setAuthenticationManager(authenticationManager);
     }
 
-
     // 登录认证
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
+        LoginUser user = new ObjectMapper().readValue(request.getInputStream(), LoginUser.class);
         return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
     }
 
@@ -58,7 +58,9 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
         String name = authResult.getName();
         String[] split = name.split(",");
-        UserDetails userDetails = User.builder().username(split[1]).authorities(authorities).build();
+//        new LoginUser(split[1], "", (List<GrantedAuthority>) authorities);
+        UserDetails userDetails = User.builder().username(split[1]).password("").authorities(authorities).build();
+
 
         // 创建accessToken
         String accessToken = JwtUtils.createAccessToken(userDetails);
@@ -67,8 +69,8 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         String refreshToken = JwtUtils.createRefreshToken(split[1]);
 
         // 存入redis
-        ///////////
-        ///////////
+        redisService.set(Constants.JWT_ACCESS_TOKEN_REDIS_KEY, accessToken, Constants.JWT_ACCESS_TOKEN_EXPIRE);
+        redisService.set(Constants.JWT_REFRESH_TOKEN_REDIS_KEY, refreshToken, Constants.JWT_REFRESH_TOKEN_EXPIRE);
 
         // 启动定时任务（判断refreshToken超时时间刷新accessToken：可以第三方调用）
 
