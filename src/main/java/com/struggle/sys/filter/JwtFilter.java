@@ -104,7 +104,7 @@ public class JwtFilter extends GenericFilterBean {
             accessToken = JwtUtils.createAccessToken(userDetails);
             redisService.set(Constants.JWT_ACCESS_TOKEN_KEY, accessToken);
         } else {
-            // cacheAccessToken没过期情况下+
+            // cacheAccessToken没过期情况下
             authorities = JwtUtils.getGrantedAuthorities(claims);
         }
 
