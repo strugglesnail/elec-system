@@ -10,23 +10,25 @@ import java.io.Serializable;
 public class TokenResponse<T> implements Serializable{
     private String msg;
     private int code;
-    private String token;
+    private String accessToken;
+    private String refreshToken;
     private Long userId;
 
 
     //构造方法全部私有
 
     private TokenResponse(int code, String msg) {
-        this(code, msg, null);
+        this(code, msg, null, null);
     }
 
-    private TokenResponse(int code, String msg, String token) {
-        this(code, msg, token, null);
+    private TokenResponse(int code, String msg, String accessToken, String refreshToken) {
+        this(code, msg, accessToken, refreshToken, null);
     }
-    private TokenResponse(int code, String msg, String token, Long userId) {
+    private TokenResponse(int code, String msg, String accessToken, String refreshToken, Long userId) {
         this.code = code;
         this.msg = msg;
-        this.token = token;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
         this.userId = userId;
     }
 
@@ -42,8 +44,12 @@ public class TokenResponse<T> implements Serializable{
         return msg;
     }
 
-    public String getToken() {
-        return token;
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
     public Long getUserId() {
@@ -51,8 +57,8 @@ public class TokenResponse<T> implements Serializable{
     }
 
     //静态方法对外开放,返回一个成功的构造器,带msg信息
-    public static <T> TokenResponse<T> createBySuccessMessage(String token, Long userId) {
-        return new TokenResponse(TokenCode.SUCCESS.getCode(), TokenCode.SUCCESS.getDesc(), token, userId);
+    public static <T> TokenResponse<T> createBySuccessMessage(String accessToken, String refreshToken, Long userId) {
+        return new TokenResponse(TokenCode.SUCCESS.getCode(), TokenCode.SUCCESS.getDesc(), accessToken, refreshToken, userId);
 
     }
     public static <T> TokenResponse<T> createByErrorMessage(String msg) {

@@ -51,42 +51,44 @@ public class JwtUtils {
     public static String createRefreshToken(String account) {
         return Jwts.builder().setSubject(account).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + Constants.JWT_REFRESH_TOKEN_EXPIRE * 1000))
+                .signWith(JwtUtils.getSecretKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
 
     // 解析Token获取用户信息
-    public static Claims parseToken(String token) throws CredentialsExpiredException {
-        Claims claims = null;
-        try {
-            claims = Jwts.parser()
+    public static Claims parseToken(String token) throws CredentialsExpiredException, ExpiredJwtException {
+        Claims claims = Jwts.parser()
                     .setSigningKey(getSecretKey()).
                             parseClaimsJws(token).getBody();
-        } catch (ExpiredJwtException ejx) {
-            ejx.printStackTrace();
-            throw new CredentialsExpiredException("Token Time Out!");
-        } catch (MalformedJwtException mje) {
-            mje.printStackTrace();
-            throw new InsufficientAuthenticationException("Token Format Error!");
-        }
         return claims;
     }
 
     // 检查Token是否已过期
     public static Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
+        Date expiration;
+        try {
+            expiration = getExpirationDateFromToken(token);
+        } catch (CredentialsExpiredException | ExpiredJwtException e) {
+            return true;
+        }
         return expiration.before(new Date());
     }
 
     // 从Token中检索到期日期
-    public static Date getExpirationDateFromToken(String token) {
+    public static Date getExpirationDateFromToken(String token) throws CredentialsExpiredException{
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
     // 从Token中获取指定的信息：Claims::getExpiration
-    public static <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = parseToken(token);
+    public static <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) throws CredentialsExpiredException, ExpiredJwtException{
+        Claims claims = parseToken(token);
         return claimsResolver.apply(claims);
+    }
+
+    // 移除Bearer
+    public static String removeBearer(String token) {
+        return token.startsWith(Constants.JWT_BEARER) ? token.replace(Constants.JWT_BEARER, "") : token;
     }
 
     // 获取密钥

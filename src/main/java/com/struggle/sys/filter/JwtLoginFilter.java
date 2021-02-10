@@ -59,7 +59,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         String name = authResult.getName();
         String[] split = name.split(",");
 //        new LoginUser(split[1], "", (List<GrantedAuthority>) authorities);
-        UserDetails userDetails = User.builder().username(split[1]).password("").authorities(authorities).build();
+        UserDetails userDetails = User.builder().username(name).password("").authorities(authorities).build();
 
 
         // 创建accessToken
@@ -69,16 +69,14 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         String refreshToken = JwtUtils.createRefreshToken(split[1]);
 
         // 存入redis
-        redisService.set(Constants.JWT_ACCESS_TOKEN_EXPIRE_KEY, accessToken, Constants.JWT_ACCESS_TOKEN_EXPIRE);
-        redisService.set(Constants.JWT_REFRESH_TOKEN_EXPIRE_KEY, refreshToken, Constants.JWT_REFRESH_TOKEN_EXPIRE);
-
-        // 启动定时任务（判断refreshToken超时时间刷新accessToken：可以第三方调用）
+        redisService.set(Constants.JWT_ACCESS_TOKEN_KEY, accessToken);
+        redisService.set(Constants.JWT_REFRESH_TOKEN_KEY, refreshToken);
 
         // 退出操作
 
 
         // 响应登录信息
-        JwtUtils.writerToJson(response, TokenResponse.createBySuccessMessage(accessToken, Long.valueOf(split[0])));
+        JwtUtils.writerToJson(response, TokenResponse.createBySuccessMessage(accessToken, refreshToken, Long.valueOf(split[0])));
     }
 
 

@@ -4,10 +4,12 @@ public interface Constants {
 
     String JWT_SECRET = "C*F-JaNdRgUkXn2r5u8xC*F-JaNdRgUkXn2r5u8xC*F-JaNdRgUkXn2r5u8xC*F-JaNdRgUkXn2r5u8xC*F-JaNdRgUkXn2r5u8xC*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w";
 
-    Long JWT_ACCESS_TOKEN_EXPIRE = 10 * 60L; // 10分钟
+//    Long JWT_ACCESS_TOKEN_EXPIRE = 10 * 60L; // 10分钟
+    Long JWT_ACCESS_TOKEN_EXPIRE = 30L; // 1/2分钟
     String JWT_ACCESS_TOKEN_KEY = "accessToken";
 
-    Long JWT_REFRESH_TOKEN_EXPIRE = 24 * 60 * 60 * 7L; // 7天
+//    Long JWT_REFRESH_TOKEN_EXPIRE = 24 * 60 * 60 * 7L; // 7天
+    Long JWT_REFRESH_TOKEN_EXPIRE = 5 * 60L; // 5分钟
 
     String JWT_BEARER = "Bearer ";
 

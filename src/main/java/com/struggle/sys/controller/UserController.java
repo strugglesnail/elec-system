@@ -1,6 +1,7 @@
 package com.struggle.sys.controller;
 import java.util.Date;
 
+import com.struggle.sys.common.Constants;
 import com.struggle.sys.common.ServerResponse;
 import com.struggle.sys.model.MenuNode;
 import com.struggle.sys.pojo.SysUser;
@@ -37,8 +38,9 @@ public class UserController {
 
     @GetMapping("/info")
     public ServerResponse getInfo(String token) {
+        token = token.replace(Constants.JWT_BEARER, "");
         Claims claims = JwtUtils.parseToken(token);
-        SysUser user = sysUserService.getUserByUserId(Long.valueOf(claims.getId()));
+        SysUser user = sysUserService.getUserByUserId(Long.valueOf(claims.get("userId", Long.class)));
         return ServerResponse.createBySuccess(user);
     }
 }

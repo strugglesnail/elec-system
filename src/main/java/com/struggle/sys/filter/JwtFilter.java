@@ -92,23 +92,26 @@ public class JwtFilter extends GenericFilterBean {
         }
 
         // 根据token获取用户信息
-        Claims claims = getClaims(cacheAccessToken);
-        String account = claims.getSubject();;
+        Claims claims;
+        String account;
         List<GrantedAuthority> authorities = null;
         // accessToken过期，需要重新创建accessToken
-        if (JwtUtils.isTokenExpired(cacheAccessToken)) {
+        if (JwtUtils.isTokenExpired(JwtUtils.removeBearer(cacheAccessToken))) {
+            claims = getClaims(request, response, cacheAccessToken);
+            account = claims.getSubject();
             // 获取数据库用户信息
             UserDetails userDetails = userService.loadUserByUsername(account);
             authorities = (List<GrantedAuthority>) userDetails.getAuthorities();
             // 创建新的token
             accessToken = JwtUtils.createAccessToken(userDetails);
             redisService.set(Constants.JWT_ACCESS_TOKEN_KEY, accessToken);
+            response.setHeader("Authorization", accessToken);
         } else {
+            claims = getClaims(request, response, cacheAccessToken);
+            account = claims.getSubject();
             // cacheAccessToken没过期情况下
             authorities = JwtUtils.getGrantedAuthorities(claims);
         }
-
-
 
 
         // 保存到上下文
@@ -119,15 +122,16 @@ public class JwtFilter extends GenericFilterBean {
 
 
     // 解析Token获取用户信息
-    private Claims getClaims(String token) throws CredentialsExpiredException {
+    private Claims getClaims(HttpServletRequest request, HttpServletResponse response, String token) throws CredentialsExpiredException, IOException {
         Claims claims = null;
-        token = token.replace("Bearer", "");
+        token = token.replace(Constants.JWT_BEARER, "");
         try {
             claims = JwtUtils.parseToken(token);
         } catch (ExpiredJwtException e) {
-            throw new CredentialsExpiredException("Token Time Out!");
+            authenticationEntryPoint.commence(request, response,new CredentialsExpiredException("Token Time Out!"));
         } catch (MalformedJwtException e) {
-            throw new InsufficientAuthenticationException("Token Format Error!");
+            authenticationEntryPoint.commence(request, response,new InsufficientAuthenticationException("Token Format Error!"));
+//            throw new InsufficientAuthenticationException("Token Format Error!");
         }
         return claims;
     }

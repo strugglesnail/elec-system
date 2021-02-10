@@ -45,15 +45,14 @@ public class RedisService {
     }
 
     // 获取全部list的值
-    
     public List getRange(Object key) {
         List range = redisTemplate.opsForList().range(key, 0, -1);
         return range;
     }
 
-    // 移除list指定的值
-    public void lrem(Object key, Long index, Object value) {
-        redisTemplate.opsForList().remove(key, index, value);
+    // 移除list指定的值: index>=0(删除与value相等的值)，index < 0 (删除所有的值)
+    public void lrem(Object key, Object value) {
+        redisTemplate.opsForList().remove(key, 0, value);
     }
 
     /**
@@ -63,5 +62,13 @@ public class RedisService {
      */
     public boolean hasKey(String key) {
         return redisTemplate.hasKey(key);
+    }
+
+    /**
+     * 根据key删除
+     * @param key
+     */
+    public void delete(String key) {
+        redisTemplate.delete(key);
     }
 }
