@@ -22,8 +22,11 @@ public class SysMenu {
     //资源URL
     private String url;
 
+    // 跳转路径
+    private String redirect;
+
     //图标
-    private String iconUrl;
+    private String icon;
 
     private Boolean requireAuth;
 
@@ -168,28 +171,15 @@ public class SysMenu {
         this.url = url;
     }
 
-    /**
-     * 获取图标
-     *
-     * @return icon_url - 图标
-     */
-    public String getIconUrl() {
-        return iconUrl;
+    public String getIcon() {
+        return icon;
     }
 
-    /**
-     * 设置图标
-     *
-     * @param iconUrl 图标
-     */
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
-    /**
-     * @return requireAuth
-     */
-    public Boolean getRequireauth() {
+    public Boolean getRequireAuth() {
         return requireAuth;
     }
 
@@ -254,6 +244,14 @@ public class SysMenu {
         this.available = available;
     }
 
+    public String getRedirect() {
+        return redirect;
+    }
+
+    public void setRedirect(String redirect) {
+        this.redirect = redirect;
+    }
+
     @Override
     public String toString() {
         return "SysMenu{" +
@@ -265,7 +263,7 @@ public class SysMenu {
                 ", keepAlive=" + keepAlive +
                 ", path='" + path + '\'' +
                 ", url='" + url + '\'' +
-                ", iconUrl='" + iconUrl + '\'' +
+                ", icon='" + icon + '\'' +
                 ", requireAuth=" + requireAuth +
                 ", type=" + type +
                 ", description='" + description + '\'' +

@@ -53,4 +53,25 @@ public class UserService implements UserDetailsService {
         // 返回当前用户账号密码及角色信息
         return new User(sysUser.getId() + "," + sysUser.getAccount(), sysUser.getPassword(), grantedAuthorities);
     }
+
+    // 加载用户信息
+    public UserDetails loadUserByUserId(Long userId) throws UsernameNotFoundException {
+        // 根据用户名称获取用户信息
+        SysUser sysUser = sysUserService.getUserByUserId(userId);
+        // 授权集合
+        List<GrantedAuthority> grantedAuthorities = Lists.newArrayList();
+
+        if (Objects.nonNull(sysUser)) {
+            // 根据用户Id获取角色信息
+            List<SysRole> roles = sysRoleMapper.getUserRoleByUserId(sysUser.getId());
+            for (SysRole role : roles) {
+                // 角色名称加入到授权集合
+                grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+            }
+        } else {
+            sysUser = new SysUser("", "", "");
+        }
+        // 返回当前用户账号密码及角色信息
+        return new User(sysUser.getId() + "," + sysUser.getAccount(), sysUser.getPassword(), grantedAuthorities);
+    }
 }

@@ -2,7 +2,7 @@ package com.struggle.sys.service;
 
 import com.struggle.sys.mapper.SysMenuMapper;
 import com.struggle.sys.model.MenuNode;
-import com.struggle.sys.model.dto.SysMenuRoleDTO;
+import com.struggle.sys.model.dto.MenuRoleDTO;
 import com.struggle.sys.pojo.SysMenu;
 import com.struggle.sys.util.tree.TreeUtils;
 import org.springframework.beans.BeanUtils;
@@ -24,15 +24,25 @@ public class SysMenuService {
     @Autowired
     private SysMenuMapper sysMenuMapper;
 
-    // 获取用户菜单
-    public List<SysMenu> getUserMenuById(Long userId) {
-        return sysMenuMapper.getUserMenuById(userId);
+    // 根据菜单Id获取菜单
+    public SysMenu getMenuById(Long menuId) {
+        return sysMenuMapper.getById(menuId);
     }
 
 
     // 获取指定用户菜单树
+    public List<MenuNode> getMenuNodeTree() {
+        List<SysMenu> userMenuList = sysMenuMapper.getMenuList();
+        return getMenuNodes(userMenuList);
+    }
+
+    // 获取指定用户菜单树
     public List<MenuNode> getMenuNodeTree(Long userId) {
         List<SysMenu> userMenuList = sysMenuMapper.getUserMenuById(userId);
+        return getMenuNodes(userMenuList);
+    }
+
+    private List<MenuNode> getMenuNodes(List<SysMenu> userMenuList) {
         List<MenuNode> menuNodeList = userMenuList.stream().map(m -> {
             MenuNode node = new MenuNode(m.getId(), m.getParentId(), m.getName());
             BeanUtils.copyProperties(m, node);
@@ -42,7 +52,7 @@ public class SysMenuService {
     }
 
     // 获取菜单对应的角色
-    public List<SysMenuRoleDTO> getMenuWithRole() {
+    public List<MenuRoleDTO> getMenuWithRole() {
         return sysMenuMapper.getMenuWithRole();
     }
 

@@ -82,7 +82,12 @@ public class TokenResponse<T> implements Serializable{
 
     // 登陆超时
     public static <T> TokenResponse<T> createByLoginExpired() {
-        return new TokenResponse(TokenCode.LOGIN_EXPIRED.getCode(), TokenCode.UNAUTHORIZED.getDesc());
+        return new TokenResponse(TokenCode.LOGIN_EXPIRED.getCode(), TokenCode.LOGIN_EXPIRED.getDesc());
+    }
+
+    // 未登录
+    public static <T> TokenResponse<T> createByNoLogin() {
+        return new TokenResponse(TokenCode.NO_LOGIN.getCode(), TokenCode.NO_LOGIN.getDesc());
     }
 
 

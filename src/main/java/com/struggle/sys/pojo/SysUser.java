@@ -29,6 +29,15 @@ public class SysUser {
     //账号状态(0-删除 1-正常 2-锁定 3-异常)
     private Byte status;
 
+    public SysUser() {
+    }
+
+    public SysUser(String username, String account, String password) {
+        this.username = username;
+        this.account = account;
+        this.password = password;
+    }
+
     /**
      * @return id
      */

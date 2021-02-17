@@ -15,10 +15,12 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,7 +30,7 @@ import java.io.IOException;
  * @date 2021/1/25 23:21
  * @desc
  */
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtFilterBak extends GenericFilterBean {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     public static int c = 0;
@@ -45,7 +47,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     // token过滤
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+
 
 
         // 从头信息获取refreshToken
@@ -79,7 +85,6 @@ public class JwtFilter extends OncePerRequestFilter {
         // 2、判断cacheAccessToken、cacheRefreshToken是否为空
         // 为空的话说明没有登录
         if (StringUtils.isEmpty(cacheAccessToken) || StringUtils.isEmpty(cacheRefreshToken)) {
-            logger.info("没有登录");
             authenticationEntryPoint.commence(request, response, new AuthenticationServiceException(null));
             return;
         }
@@ -89,7 +94,6 @@ public class JwtFilter extends OncePerRequestFilter {
         // 2、验证客户段的token是否与服务器端的一致
         // 【客户端refreshToken与服务端refreshToken不一致】 或者 【客户端accessToken与服务端accessToken不一致】
         if (!cacheRefreshToken.equals(refreshToken) || !cacheAccessToken.equals(accessToken)) {
-            logger.info("验证信息有误");
             authenticationEntryPoint.commence(request, response, new InsufficientAuthenticationException("身份验证信息不足"));
             return;
         }
@@ -100,7 +104,6 @@ public class JwtFilter extends OncePerRequestFilter {
         // 3、验证refreshToken是否过期
         // refreshToken过期，则需要重新登陆
         if (JwtUtils.isTokenExpired(refreshToken)) {
-            logger.info("refreshToken过期，则需要重新登陆");
             authenticationEntryPoint.commence(request, response, new CredentialsExpiredException(null));
             return;
         }
@@ -124,10 +127,8 @@ public class JwtFilter extends OncePerRequestFilter {
         // 保存到上下文
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(claims.getSubject(), null, JwtUtils.getGrantedAuthorities(claims)));
 
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(request, servletResponse);
     }
-
-
 
 
     // 解析Token获取用户信息

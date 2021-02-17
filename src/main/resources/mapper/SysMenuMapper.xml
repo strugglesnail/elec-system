@@ -10,14 +10,15 @@
         <result column="keep_alive" jdbcType="BIT" property="keepAlive" />
         <result column="path" jdbcType="VARCHAR" property="path" />
         <result column="url" jdbcType="VARCHAR" property="url" />
-        <result column="icon_url" jdbcType="VARCHAR" property="iconUrl" />
+        <result column="redirect" jdbcType="VARCHAR" property="redirect" />
+        <result column="icon" jdbcType="VARCHAR" property="icon" />
         <result column="require_auth" jdbcType="BIT" property="requireAuth" />
         <result column="type" jdbcType="BIT" property="type" />
         <result column="description" jdbcType="VARCHAR" property="description" />
         <result column="available" jdbcType="TINYINT" property="available" />
     </resultMap>
     <sql id="sys_menuColumns">
-    id, parent_id, name, enname, component, keep_alive, path, url, icon_url, require_auth, type, description, available
+    id, parent_id, name, enname, component, keep_alive, path, url, icon, require_auth, type, description, available
   </sql>
     <sql id="sys_menuDynamicWhere">
         <where>
@@ -34,7 +35,8 @@
             <if test="null != keepAlive and '' !=  keepAlive">AND keep_alive = #{ keepAlive}</if>
             <if test="null != path and '' !=  path">AND path = #{ path}</if>
             <if test="null != url and '' !=  url">AND url = #{ url}</if>
-            <if test="null != iconUrl and '' !=  iconUrl">AND icon_url = #{ iconUrl}</if>
+            <if test="null != redirect and '' !=  redirect">AND redirect = #{ redirect}</if>
+            <if test="null != icon and '' !=  icon">AND icon = #{ icon}</if>
             <if test="null != requireAuth and '' !=  requireAuth">AND require_auth = #{ requireAuth}</if>
             <if test="null != type and '' !=  type">AND type = #{ type}</if>
             <if test="null != description and '' !=  description">AND description = #{ description}</if>
@@ -56,7 +58,8 @@
             <if test="null != keepAlive and '' !=  keepAlive">AND keep_alive LIKE #{ keepAlive}</if>
             <if test="null != path and '' !=  path">AND path LIKE #{ path}</if>
             <if test="null != url and '' !=  url">AND url LIKE #{ url}</if>
-            <if test="null != iconUrl and '' !=  iconUrl">AND icon_url LIKE #{ iconUrl}</if>
+            <if test="null != redirect and '' !=  redirect">AND redirect LIKE #{ redirect}</if>
+            <if test="null != icon and '' !=  icon">AND icon LIKE #{ icon}</if>
             <if test="null != requireAuth and '' !=  requireAuth">AND require_auth LIKE #{ requireAuth}</if>
             <if test="null != type and '' !=  type">AND type LIKE #{ type}</if>
             <if test="null != description and '' !=  description">AND description LIKE #{ description}</if>
@@ -73,7 +76,7 @@
         SELECT <include refid="sys_menuColumns" /> FROM  `sys_menu` <include refid="sys_menuDynamicWhere" />
     </select>
     <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        SELECT <include refid="sys_menuColumns" /> FROM  `sys_menu` <include refid="sys_menuDynamicWhere" /> WHERE id = #{id}
+        SELECT <include refid="sys_menuColumns" /> FROM  `sys_menu` WHERE id = #{id}
     </select>
     <select id="getOne" parameterType="com.struggle.sys.pojo.SysMenu" resultMap="BaseResultMap">
         SELECT <include refid="sys_menuColumns" /> FROM  `sys_menu` <include refid="sys_menuDynamicWhere" /> LIMIT 1
@@ -85,28 +88,53 @@
         SELECT COUNT(1) FROM `sys_menu` <include refid="sys_menuDynamicLikeWhere" />
     </select>
 
-    <!-- 自定义SQL -->
-    <select id="getUserMenuById" resultMap="BaseResultMap">
+    <sql id="MENU_LIST">
         SELECT
           m.id,
           m.parent_id,
           m.name,
+          m.enname,
           m.path,
           m.url,
+          m.icon,
+          m.redirect,
           m.component,
           m.keep_alive,
-          m.require_auth
+          m.require_auth,
+          m.available
         FROM sys_user u
         RIGHT JOIN sys_user_role ur ON u.id = ur.user_id
         RIGHT JOIN sys_menu r ON ur.role_id = r.id
         RIGHT JOIN sys_role_menu rm ON rm.role_id = r.id
         RIGHT JOIN sys_menu m On m.id = rm.menu_id
+    </sql>
+
+    <!-- 自定义SQL -->
+    <select id="getUserMenuById" resultMap="BaseResultMap">
+        <include refid="MENU_LIST"/>
         WHERE u.id = #{userId}
+    </select>
+
+    <select id="getMenuList" resultMap="BaseResultMap">
+         SELECT
+          m.id,
+          m.parent_id,
+          m.name,
+          m.enname,
+          m.path,
+          m.url,
+          m.icon,
+          m.redirect,
+          m.component,
+          m.keep_alive,
+          m.require_auth,
+          m.available
+        FROM sys_menu m
     </select>
 
 
     <!-- 获取菜单对应的角色 -->
-    <resultMap id="MenuWithRoleResultMap" type="com.struggle.sys.model.dto.SysMenuRoleDTO" extends="BaseResultMap">
+    <resultMap id="MenuWithRoleResultMap" type="com.struggle.sys.model.dto.MenuRoleDTO" extends="BaseResultMap">
         <collection property="roles" ofType="com.struggle.sys.pojo.SysRole">
             <id column="rid" property="id"/>
             <result column="roleName" property="name"/>
@@ -120,6 +148,8 @@
           m.name,
           m.path,
           m.url,
+          m.icon,
+          m.redirect,
           m.component,
           m.keep_alive,
           m.require_auth,
@@ -136,7 +166,7 @@
 
     <sql id="save_sys_menu_columns">
     INSERT INTO `sys_menu`(
-		parent_id, name, enname, component, keep_alive, path, url, icon_url, require_auth, type, description, available
+		parent_id, name, enname, component, keep_alive, path, url, redirect, icon, require_auth, type, description, available
 	) VALUES
   </sql>
 
@@ -150,7 +180,8 @@
 	  #{ keepAlive, jdbcType=BIT},
 	  #{ path, jdbcType=VARCHAR},
 	  #{ url, jdbcType=VARCHAR},
-	  #{ iconUrl, jdbcType=VARCHAR},
+	  #{ redirect, jdbcType=VARCHAR},
+	  #{ icon, jdbcType=VARCHAR},
 	  #{ requireAuth, jdbcType=BIT},
 	  #{ type, jdbcType=BIT},
 	  #{ description, jdbcType=VARCHAR},
@@ -167,7 +198,8 @@
 	  #{ item.keepAlive, jdbcType=BIT},
 	  #{ item.path, jdbcType=VARCHAR},
 	  #{ item.url, jdbcType=VARCHAR},
-	  #{ item.iconUrl, jdbcType=VARCHAR},
+	  #{ item.redirect, jdbcType=VARCHAR},
+	  #{ item.icon, jdbcType=VARCHAR},
 	  #{ item.requireAuth, jdbcType=BIT},
 	  #{ item.type, jdbcType=BIT},
 	  #{ item.description, jdbcType=VARCHAR},
@@ -180,13 +212,6 @@
         <include refid="save_sys_menu_columns" /><include refid="save_sys_menu_values" />
     </insert>
 
-    <!--<insert id="saveBatch" parameterType="list">-->
-        <!--<include refid="save_sys_menu_columns"/>-->
-        <!--<foreach collection="list" index="index" item="item" separator=",">-->
-            <!--<include refid="batch_save_sys_menu_values"/>-->
-        <!--</foreach>-->
-    <!--</insert>-->
-
 
     <sql id="sys_menuUpdate">
         UPDATE `sys_menu`
@@ -198,7 +223,8 @@
             <if test="null != keepAlive">keep_alive = #{ keepAlive, jdbcType=BIT },</if>
             <if test="null != path">path = #{ path, jdbcType=VARCHAR },</if>
             <if test="null != url">url = #{ url, jdbcType=VARCHAR },</if>
-            <if test="null != iconUrl">icon_url = #{ iconUrl, jdbcType=VARCHAR },</if>
+            <if test="null != redirect">redirect = #{ redirect, jdbcType=VARCHAR },</if>
+            <if test="null != icon">icon = #{ icon, jdbcType=VARCHAR },</if>
             <if test="null != requireAuth">require_auth = #{ requireAuth, jdbcType=BIT },</if>
             <if test="null != type">type = #{ type, jdbcType=BIT },</if>
             <if test="null != description">description = #{ description, jdbcType=VARCHAR },</if>
@@ -216,7 +242,8 @@
             <if test="null != item.keepAlive">keep_alive = #{ item.keepAlive, jdbcType=BIT },</if>
             <if test="null != item.path">path = #{ item.path, jdbcType=VARCHAR },</if>
             <if test="null != item.url">url = #{ item.url, jdbcType=VARCHAR },</if>
-            <if test="null != item.iconUrl">icon_url = #{ item.iconUrl, jdbcType=VARCHAR },</if>
+            <if test="null != item.redirect">redirect = #{ item.redirect, jdbcType=VARCHAR },</if>
+            <if test="null != item.icon">icon = #{ item.icon, jdbcType=VARCHAR },</if>
             <if test="null != item.requireAuth">require_auth = #{ item.requireAuth, jdbcType=BIT },</if>
             <if test="null != item.type">type = #{ item.type, jdbcType=BIT },</if>
             <if test="null != item.description">description = #{ item.description, jdbcType=VARCHAR },</if>

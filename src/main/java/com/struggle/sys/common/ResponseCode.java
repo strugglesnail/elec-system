@@ -1,9 +1,8 @@
 package com.struggle.sys.common;
 
 public enum ResponseCode {
-    SUCCESS(0,"SUCCESS"),//成功
+    SUCCESS(200,"SUCCESS"),//成功
     ERROR(1,"ERROR"), //错误
-    ILLEGAL_ARGUMENT(2,"ILLEGAL_ARGUMENT"), //参数错误
     NEED_LOGIN(10,"NEED_LOGIN"),//需要登录
     NEED_PERMISSION(20,"NEED_PERMISSION");//需要权限
 

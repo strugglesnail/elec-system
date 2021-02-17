@@ -21,8 +21,11 @@ public class MenuNode extends RootTreeNode {
     //资源URL
     private String url;
 
+    // 跳转路径
+    private String redirect;
+
     //图标
-    private String iconUrl;
+    private String icon;
 
     private Boolean requireAuth;
 
@@ -75,12 +78,12 @@ public class MenuNode extends RootTreeNode {
         this.url = url;
     }
 
-    public String getIconUrl() {
-        return iconUrl;
+    public String getIcon() {
+        return icon;
     }
 
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public Boolean getRequireAuth() {
@@ -113,5 +116,13 @@ public class MenuNode extends RootTreeNode {
 
     public void setAvailable(Byte available) {
         this.available = available;
+    }
+
+    public String getRedirect() {
+        return redirect;
+    }
+
+    public void setRedirect(String redirect) {
+        this.redirect = redirect;
     }
 }

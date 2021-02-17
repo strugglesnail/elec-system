@@ -28,8 +28,10 @@ public class TokenAuthenticationEntryPoint implements AuthenticationEntryPoint {
             error = TokenResponse.createByErrorMessage(exception.getMessage());
         } else if (exception instanceof CredentialsExpiredException) {
             error = TokenResponse.createByLoginExpired();
-        }  else if (exception instanceof AuthenticationCredentialsNotFoundException) {
+        } else if (exception instanceof AuthenticationCredentialsNotFoundException) {
             error = TokenResponse.createByUnauthorized();
+        } else if (exception instanceof AuthenticationServiceException) {
+            error = TokenResponse.createByNoLogin();
         } else {
             error = TokenResponse.createByErrorMessage("访问失败!");
         }

@@ -1,6 +1,6 @@
 package com.struggle.sys.security;
 
-import com.struggle.sys.model.dto.SysMenuRoleDTO;
+import com.struggle.sys.model.dto.MenuRoleDTO;
 import com.struggle.sys.pojo.SysRole;
 import com.struggle.sys.service.SysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +32,8 @@ public class CustomFilterInvocationSecurityMetadataSource implements FilterInvoc
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
         String requestUrl = ((FilterInvocation) object).getRequestUrl();
         // 获取菜单对应的角色
-        List<SysMenuRoleDTO> permissions = sysMenuService.getMenuWithRole();
-        for (SysMenuRoleDTO perm : permissions) {
+        List<MenuRoleDTO> permissions = sysMenuService.getMenuWithRole();
+        for (MenuRoleDTO perm : permissions) {
             if (StringUtils.isEmpty(perm.getUrl())) continue;
             if (antPathMatcher.match(perm.getUrl(), requestUrl)) {
                 System.out.println("11: " + perm);

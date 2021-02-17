@@ -1,6 +1,7 @@
 package com.struggle.sys.util;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.struggle.sys.common.Constants;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -102,9 +104,20 @@ public class JwtUtils {
         return User.builder().username(account).password(password).authorities(authorities).build();
     }
 
-    // 获取用户权限信息+
+    // 获取用户权限信息
     public static List<GrantedAuthority> getGrantedAuthorities(Claims claims) {
         return AuthorityUtils.commaSeparatedStringToAuthorityList((String) claims.get("authorities"));
+    }
+
+    // accessToken的redis key
+    public static String getAccessTokenKey(Serializable userId) {
+        return Constants.JWT_ACCESS_TOKEN_KEY + ":" + userId;
+    }
+
+
+    // refreshToken的redis key
+    public static String getRefreshTokenKey(Serializable userId) {
+        return Constants.JWT_REFRESH_TOKEN_KEY + ":" + userId;
     }
 
     // 响应数据

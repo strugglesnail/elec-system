@@ -1,6 +1,6 @@
 package com.struggle.sys.mapper;
 
-import com.struggle.sys.model.dto.SysMenuRoleDTO;
+import com.struggle.sys.model.dto.MenuRoleDTO;
 import com.struggle.sys.pojo.SysMenu;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Repository;
@@ -27,8 +27,11 @@ public interface SysMenuMapper {
     // 根据用户Id获取菜单信息
     List<SysMenu> getUserMenuById(Long userId);
 
+    // 获取菜单信息
+    List<SysMenu> getMenuList();
+
     // 获取菜单对应的角色
-    List<SysMenuRoleDTO> getMenuWithRole();
+    List<MenuRoleDTO> getMenuWithRole();
 
     void save(SysMenu SysMenu);
 

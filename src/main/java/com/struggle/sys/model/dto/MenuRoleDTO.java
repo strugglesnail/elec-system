@@ -11,7 +11,7 @@ import java.util.List;
  * @desc
  */
 // 菜单包装类：包含多个角色（一个菜单对应多个角色）
-public class SysMenuRoleDTO extends SysMenu {
+public class MenuRoleDTO extends SysMenu {
 
     private List<SysRole> roles;
 
