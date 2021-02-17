@@ -208,7 +208,7 @@
   </sql>
 
 
-    <insert id="save" keyProperty="id" parameterType="com.struggle.sys.pojo.SysMenu" useGeneratedKeys="true">
+    <insert id="save" keyProperty="id" useGeneratedKeys="true" parameterType="com.struggle.sys.pojo.SysMenu" >
         <include refid="save_sys_menu_columns" /><include refid="save_sys_menu_values" />
     </insert>
 

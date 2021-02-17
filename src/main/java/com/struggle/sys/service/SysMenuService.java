@@ -8,6 +8,7 @@ import com.struggle.sys.util.tree.TreeUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +55,18 @@ public class SysMenuService {
     // 获取菜单对应的角色
     public List<MenuRoleDTO> getMenuWithRole() {
         return sysMenuMapper.getMenuWithRole();
+    }
+
+
+    // 保存菜单
+    @Transactional
+    public void saveMenu(SysMenu menu) {
+        sysMenuMapper.save(menu);
+    }
+    // 更新菜单
+    @Transactional
+    public void updateMenu(SysMenu menu) {
+        sysMenuMapper.update(menu);
     }
 
 }

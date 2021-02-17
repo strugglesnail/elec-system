@@ -5,9 +5,7 @@ import com.struggle.sys.model.MenuNode;
 import com.struggle.sys.pojo.SysMenu;
 import com.struggle.sys.service.SysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,5 +31,17 @@ public class MenuController {
     public ServerResponse getMenuById(Long menuId) {
         SysMenu menu = sysMenuService.getMenuById(menuId);
         return ServerResponse.createBySuccess(menu);
+    }
+
+    @PostMapping("/saveMenu")
+    public ServerResponse saveMenu(@RequestBody SysMenu menu) {
+        sysMenuService.saveMenu(menu);
+        return ServerResponse.createBySuccessMessage("保存成功!");
+    }
+
+    @PostMapping("/updateMenu")
+    public ServerResponse updateMenu(@RequestBody SysMenu menu) {
+        sysMenuService.updateMenu(menu);
+        return ServerResponse.createBySuccessMessage("更新成功!");
     }
 }
