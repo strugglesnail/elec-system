@@ -5,6 +5,7 @@ import com.struggle.sys.model.MenuNode;
 import com.struggle.sys.pojo.SysMenu;
 import com.struggle.sys.service.SysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,5 +44,12 @@ public class MenuController {
     public ServerResponse updateMenu(@RequestBody SysMenu menu) {
         sysMenuService.updateMenu(menu);
         return ServerResponse.createBySuccessMessage("更新成功!");
+    }
+
+    @PostMapping(value = "/deleteMenu", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ServerResponse deleteMenu(@RequestBody Long[] menuIds) {
+//        sysMenuService.delMenu(menuIds);
+        System.out.println(menuIds);
+        return ServerResponse.createBySuccessMessage("删除成功!");
     }
 }

@@ -2,6 +2,7 @@ package com.struggle.sys.mapper;
 
 import com.struggle.sys.model.dto.MenuRoleDTO;
 import com.struggle.sys.pojo.SysMenu;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Repository;
 
@@ -40,4 +41,6 @@ public interface SysMenuMapper {
     void updateBatch(List<SysMenu> list);
 
     void delete(Long id);
+
+    void deleteBatch(@Param("ids") Long[] ids);
 }

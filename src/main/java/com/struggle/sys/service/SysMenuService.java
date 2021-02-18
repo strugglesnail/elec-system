@@ -69,4 +69,10 @@ public class SysMenuService {
         sysMenuMapper.update(menu);
     }
 
+    // 删除菜单
+    @Transactional
+    public void delMenu(Long[] menuIds) {
+        sysMenuMapper.deleteBatch(menuIds);
+    }
+
 }

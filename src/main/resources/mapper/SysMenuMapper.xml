@@ -260,6 +260,13 @@
         </foreach>
     </update>
     <delete id="delete">
-    DELETE FROM `sys_role` WHERE id = #{id}DELETE FROM `sys_menu` WHERE id = #{id}
-  </delete>
+      DELETE FROM `sys_menu` WHERE id = #{id}
+    </delete>
+    <delete id="deleteBatch">
+      DELETE FROM `sys_menu` WHERE id in (
+        <foreach collection="ids" index="index" item="id" separator=",">
+            #{id}
+        </foreach>
+      )
+    </delete>
 </mapper>
