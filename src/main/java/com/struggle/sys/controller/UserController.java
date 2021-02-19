@@ -1,36 +1,23 @@
 package com.struggle.sys.controller;
-import java.util.Collection;
-import java.util.Date;
 
 import com.struggle.sys.common.Constants;
 import com.struggle.sys.common.ServerResponse;
-import com.struggle.sys.common.TokenResponse;
-import com.struggle.sys.filter.JwtFilter;
 import com.struggle.sys.model.MenuNode;
 import com.struggle.sys.model.dto.UserMenuDTO;
+import com.struggle.sys.model.vo.UserVo;
 import com.struggle.sys.pojo.SysUser;
-import com.struggle.sys.service.RedisService;
 import com.struggle.sys.service.SysMenuService;
 import com.struggle.sys.service.SysUserService;
-import com.struggle.sys.service.UserService;
 import com.struggle.sys.util.JwtUtils;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @auther strugglesnail
@@ -47,10 +34,6 @@ public class UserController {
     private SysMenuService sysMenuService;
     @Autowired
     private SysUserService sysUserService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private RedisService redisService;
 
 
     @GetMapping("/getMenuNodeTree")
@@ -76,29 +59,32 @@ public class UserController {
         return ServerResponse.createBySuccess(userMenu);
     }
 
+    @GetMapping("/getUserPage")
+    public ServerResponse getUserPage(UserVo user) {
+        return sysUserService.getUserPage(user);
+    }
 
-    @GetMapping("/checkToken")
-    public TokenResponse checkToken(String accessToken, Long userId) {
-        if (Objects.isNull(userId)) {
-            return TokenResponse.createByErrorMessage("userId不为空!");
-        }
-        // 根据token获取用户信息
-        Collection<? extends GrantedAuthority> authorities;
-        // accessToken过期，需要重新创建accessToken
-        if (JwtUtils.isTokenExpired(JwtUtils.removeBearer(accessToken))) {
-             // 获取数据库用户信息
-            UserDetails userDetails = userService.loadUserByUserId(userId);
-            authorities = userDetails.getAuthorities();
-            // 创建新的token
-            accessToken = JwtUtils.createAccessToken(userDetails);
-            redisService.set(Constants.JWT_ACCESS_TOKEN_KEY, accessToken);
-            // 保存到上下文
-            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(userId, null, authorities));
+    @GetMapping("/getUserById")
+    public ServerResponse getUserPage(Long userId) {
+        SysUser user = sysUserService.getUserByUserId(userId);
+        return ServerResponse.createBySuccess(user);
+    }
 
-            String cacheRefreshToken = redisService.get(JwtUtils.getRefreshTokenKey(userId), String.class);
-            return TokenResponse.createBySuccessMessage(accessToken, cacheRefreshToken, userId);
-        }
-        return null;
+    @PostMapping("/addUser")
+    public ServerResponse addUser(@RequestBody SysUser user) {
+         sysUserService.addUser(user);
+        return ServerResponse.createBySuccessMessage("保存成功!");
+    }
 
+    @PostMapping("/updateUser")
+    public ServerResponse updateUser(@RequestBody SysUser user) {
+         sysUserService.updateUser(user);
+        return ServerResponse.createBySuccessMessage("更新成功!");
+    }
+
+    @GetMapping("/deleteUser")
+    public ServerResponse deleteUser(Long userId) {
+         sysUserService.deleteUser(userId);
+        return ServerResponse.createBySuccessMessage("删除成功!");
     }
 }

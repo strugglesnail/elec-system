@@ -46,10 +46,9 @@ public class MenuController {
         return ServerResponse.createBySuccessMessage("更新成功!");
     }
 
-    @PostMapping(value = "/deleteMenu", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ServerResponse deleteMenu(@RequestBody Long[] menuIds) {
-//        sysMenuService.delMenu(menuIds);
-        System.out.println(menuIds);
+    @PostMapping("/deleteMenu")
+    public ServerResponse deleteMenu(@RequestParam("menuIds") Long[] menuIds) {
+        sysMenuService.delMenu(menuIds);
         return ServerResponse.createBySuccessMessage("删除成功!");
     }
 }

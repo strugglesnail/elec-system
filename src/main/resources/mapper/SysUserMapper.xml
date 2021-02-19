@@ -67,6 +67,8 @@
   <select id="countLike" parameterType="com.struggle.sys.pojo.SysUser" resultType="java.lang.Long">
     SELECT COUNT(1) FROM `sys_user` <include refid="sys_userDynamicLikeWhere" />
   </select>
+
+
   <sql id="save_sys_user_columns">
     INSERT INTO `sys_user`(
 		username, account, password, avatar, create_time, last_login_time, status
@@ -78,9 +80,9 @@
 	  #{ account, jdbcType=VARCHAR},
 	  #{ password, jdbcType=VARCHAR},
 	  #{ avatar, jdbcType=VARCHAR},
-	  #{ createTime, jdbcType=TIMESTAMP},
+	  now(),
 	  #{ lastLoginTime, jdbcType=TIMESTAMP},
-	  #{ status, jdbcType=TINYINT}
+	  1
 	)
   </sql>
   <sql id="batch_save_sys_user_values">
@@ -103,6 +105,8 @@
 		<include refid="batch_save_sys_user_values"/>
 	</foreach>
   </insert>
+
+
   <sql id="sys_userUpdate">
     UPDATE `sys_user` 
 	<set> 
@@ -110,7 +114,6 @@
       <if test="null != account">account = #{ account, jdbcType=VARCHAR },</if>
       <if test="null != password">password = #{ password, jdbcType=VARCHAR },</if>
       <if test="null != avatar">avatar = #{ avatar, jdbcType=VARCHAR },</if>
-      <if test="null != createTime">create_time = #{ createTime, jdbcType=TIMESTAMP },</if>
       <if test="null != lastLoginTime">last_login_time = #{ lastLoginTime, jdbcType=TIMESTAMP },</if>
       <if test="null != status">status = #{ status, jdbcType=TINYINT }</if>
 	</set>
@@ -123,7 +126,6 @@
       <if test="null != item.account">account = #{ item.account, jdbcType=VARCHAR },</if>
       <if test="null != item.password">password = #{ item.password, jdbcType=VARCHAR },</if>
       <if test="null != item.avatar">avatar = #{ item.avatar, jdbcType=VARCHAR },</if>
-      <if test="null != item.createTime">create_time = #{ item.createTime, jdbcType=TIMESTAMP },</if>
       <if test="null != item.lastLoginTime">last_login_time = #{ item.lastLoginTime, jdbcType=TIMESTAMP },</if>
       <if test="null != item.status">status = #{ item.status, jdbcType=TINYINT }</if>
 	</set>

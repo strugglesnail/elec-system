@@ -45,9 +45,9 @@ public class ServerResponse<T> implements Serializable{
 
 
     //对外开放get方法
-//    public long getCount() {
-//        return count;
-//    }
+    public long getCount() {
+        return count;
+    }
 
     public int getCode() {
         return code;
