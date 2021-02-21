@@ -132,6 +132,16 @@
         FROM sys_menu m
     </select>
 
+    <!-- 获取角色菜单信息 -->
+  <select id="getMenuByRoleId" resultType="com.struggle.sys.model.TreeNode">
+    SELECT
+      m.id id,
+      m.parent_id parentId,
+      m.name label
+    FROM sys_menu m
+    INNER JOIN sys_role_menu rm ON m.id = rm.menu_id AND rm.role_id = #{roleId}
+  </select>
+
 
     <!-- 获取菜单对应的角色 -->
     <resultMap id="MenuWithRoleResultMap" type="com.struggle.sys.model.dto.MenuRoleDTO" extends="BaseResultMap">

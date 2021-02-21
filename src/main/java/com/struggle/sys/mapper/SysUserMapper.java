@@ -1,5 +1,6 @@
 package com.struggle.sys.mapper;
 
+import com.struggle.sys.pojo.SysRole;
 import com.struggle.sys.pojo.SysUser;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;

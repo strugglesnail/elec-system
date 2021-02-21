@@ -5,6 +5,7 @@ import com.struggle.sys.common.ServerResponse;
 import com.struggle.sys.model.MenuNode;
 import com.struggle.sys.model.dto.UserMenuDTO;
 import com.struggle.sys.model.vo.UserVo;
+import com.struggle.sys.pojo.SysRole;
 import com.struggle.sys.pojo.SysUser;
 import com.struggle.sys.service.SysMenuService;
 import com.struggle.sys.service.SysUserService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @auther strugglesnail
@@ -68,6 +70,12 @@ public class UserController {
     public ServerResponse getUserPage(Long userId) {
         SysUser user = sysUserService.getUserByUserId(userId);
         return ServerResponse.createBySuccess(user);
+    }
+
+    @GetMapping("/getUserRoleById")
+    public ServerResponse getUserRoleById(Long userId) {
+        Map<String, List<SysRole>> rolesMap = sysUserService.getUserRoleById(userId);
+        return ServerResponse.createBySuccess(rolesMap);
     }
 
     @PostMapping("/addUser")

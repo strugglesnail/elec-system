@@ -1,5 +1,6 @@
 package com.struggle.sys.mapper;
 
+import com.struggle.sys.model.TreeNode;
 import com.struggle.sys.model.dto.MenuRoleDTO;
 import com.struggle.sys.pojo.SysMenu;
 import org.apache.ibatis.annotations.Param;
@@ -30,6 +31,9 @@ public interface SysMenuMapper {
 
     // 获取菜单信息
     List<SysMenu> getMenuList();
+
+    // 根据角色Id获取菜单
+    List<TreeNode> getMenuByRoleId(Long roleId);
 
     // 获取菜单对应的角色
     List<MenuRoleDTO> getMenuWithRole();

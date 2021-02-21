@@ -9,7 +9,7 @@ public interface Constants {
     String JWT_ACCESS_TOKEN_KEY = "accessToken";
 
 //    Long JWT_REFRESH_TOKEN_EXPIRE = 24 * 60 * 60 * 7L; // 7天
-    Long JWT_REFRESH_TOKEN_EXPIRE = 30 * 60L; // 30分钟
+    Long JWT_REFRESH_TOKEN_EXPIRE = 60 * 60L; // 60分钟
 
     String JWT_BEARER = "Bearer ";
     String JWT_HEAD_ACCESS_TOKEN = "Authorization";

@@ -1,8 +1,10 @@
 package com.struggle.sys.service;
 
 import com.struggle.sys.common.ServerResponse;
+import com.struggle.sys.mapper.SysRoleMapper;
 import com.struggle.sys.mapper.SysUserMapper;
 import com.struggle.sys.model.vo.UserVo;
+import com.struggle.sys.pojo.SysRole;
 import com.struggle.sys.pojo.SysUser;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
@@ -10,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @auther strugglesnail
@@ -22,6 +26,9 @@ public class SysUserService {
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private SysRoleMapper sysRoleMapper;
 
 
     // 根据用户账号称获取用户信息
@@ -46,6 +53,16 @@ public class SysUserService {
     // 根据userId获取用户信息
     public SysUser getUserByUserId(Long userId) {
         return sysUserMapper.getById(userId);
+    }
+
+    // 根据userId获取角色
+    public Map<String, List<SysRole>> getUserRoleById(Long userId) {
+        List<SysRole> allRoles = sysRoleMapper.list(new SysRole());
+        List<SysRole> userRoles = sysRoleMapper.getUserRoleByUserId(userId);
+        Map<String, List<SysRole>> resultMap = new HashMap<>(2);
+        resultMap.put("allRoles", allRoles);
+        resultMap.put("userRoles", userRoles);
+        return resultMap;
     }
 
     // 新增用户
