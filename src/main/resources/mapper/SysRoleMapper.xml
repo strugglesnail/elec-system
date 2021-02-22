@@ -66,9 +66,9 @@
   <select id="getRoleMenuByRoleId" resultType="com.struggle.sys.model.RoleMenu">
      SELECT
        id,
-       roleId,
-       menuId
-     FROM sys_role_menu role_id = #{roleId}
+       role_id roleId,
+       menu_id menuId
+     FROM sys_role_menu WHERE role_id = #{roleId}
   </select>
   <!-- 根据用户Id获取角色信息 -->
   <update id="updateRoleMenu" parameterType="com.struggle.sys.model.RoleMenu">
