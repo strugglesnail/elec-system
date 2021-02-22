@@ -62,6 +62,36 @@
          sys_role r
      INNER JOIN sys_user_role ur ON r.id = ur.role_id AND ur.user_id = #{userId}
   </select>
+  <!-- 根据用户Id获取角色信息 -->
+  <select id="getRoleMenuByRoleId" resultType="com.struggle.sys.model.RoleMenu">
+     SELECT
+       id,
+       roleId,
+       menuId
+     FROM sys_role_menu role_id = #{roleId}
+  </select>
+  <!-- 根据用户Id获取角色信息 -->
+  <update id="updateRoleMenu" parameterType="com.struggle.sys.model.RoleMenu">
+    UPDATE `sys_role_menu`
+    <set>
+      menu_id = #{ menuId }
+    </set>
+    WHERE id = #{ id }
+  </update>
+
+  <insert id="saveRoleMenu" keyProperty="id" parameterType="com.struggle.sys.model.RoleMenu" useGeneratedKeys="true">
+    INSERT INTO `sys_role_menu`(
+		role_id, menu_id
+	) VALUES (
+	  #{ roleId },
+	  #{ menuId }
+	)
+  </insert>
+
+  <delete id="deleteRoleMenu">
+    DELETE FROM `sys_role_menu` WHERE id = #{id}
+  </delete>
+
 
 
   <sql id="save_sys_role_columns">

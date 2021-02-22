@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -60,6 +61,15 @@ public class RoleController {
     @PostMapping("/updateRole")
     public ServerResponse updateRole(@RequestBody SysRole role) {
          sysRoleService.updateRole(role);
+        return ServerResponse.createBySuccessMessage("更新成功!");
+    }
+    // 更新角色菜单
+    @PostMapping("/updateRoleMenu")
+    public ServerResponse updateRoleMenu(@RequestParam("newMenuIds") Long[] newMenusIds, Long roleId) {
+        if (Objects.isNull(roleId)) {
+            return ServerResponse.createByErrorMessage("参数为空!");
+        }
+         sysRoleService.updateRoleMenu(newMenusIds, roleId);
         return ServerResponse.createBySuccessMessage("更新成功!");
     }
 
