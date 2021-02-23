@@ -65,11 +65,11 @@ public class RoleController {
     }
     // 更新角色菜单
     @PostMapping("/updateRoleMenu")
-    public ServerResponse updateRoleMenu(@RequestParam(value = "newMenuIds", required = false) Long[] newMenusIds, Long roleId) {
+    public ServerResponse updateRoleMenu(@RequestParam(value = "oldMenusIds", required = false) Long[] oldMenusIds, @RequestParam(value = "newMenuIds", required = false) Long[] newMenusIds, Long roleId) {
         if (Objects.isNull(roleId)) {
             return ServerResponse.createByErrorMessage("参数为空!");
         }
-         sysRoleService.updateRoleMenu(newMenusIds, roleId);
+         sysRoleService.updateRoleMenu(oldMenusIds, newMenusIds, roleId);
         return ServerResponse.createBySuccessMessage("更新成功!");
     }
 
