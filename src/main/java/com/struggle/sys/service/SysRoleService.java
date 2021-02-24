@@ -59,7 +59,6 @@ public class SysRoleService {
         // 新增菜单为空情况，则直接返回
         if (newMenuIds == null || newMenuIds.length == 0) {
             logger.info("新增菜单为空!");
-//            return;
         }
         List<RoleMenu> roleMenus = sysRoleMapper.getRoleMenuByRoleId(roleId);
         roleMenus = CollectionUtils.isEmpty(roleMenus) ? Lists.newArrayList() : roleMenus;
@@ -127,36 +126,6 @@ public class SysRoleService {
 
             }
         }
-
-
-
-
-
-//        // 如果新增的菜单数量大于roleMenus数量则把roleMenus更新掉，然后插入多余的新增菜单
-//        if (newMenuIds.length > roleMenus.size()) {
-//            // 更新掉roleMenus
-//            for (int i = 0; i < roleMenus.size(); i++) {
-//                RoleMenu roleMenu = new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]);
-//                sysRoleMapper.updateRoleMenu(roleMenu);
-//            }
-//            // 插入多余的新增菜单
-//            for (int i = roleMenus.size(); i < newMenuIds.length; i++) {
-//                RoleMenu roleMenu = new RoleMenu(null, roleId, newMenuIds[i]);
-//                sysRoleMapper.saveRoleMenu(roleMenu);
-//            }
-//        } else {
-//            // 如果新增的菜单数量小于roleMenus数量则把roleMenus部分更新掉，然后删除多余的roleMenus
-//            for (int i = 0; i < newMenuIds.length; i++) {
-//                RoleMenu roleMenu = new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]);
-//                sysRoleMapper.updateRoleMenu(roleMenu);
-//            }
-//            // 删除多余的roleMenus
-//            for (int i = newMenuIds.length; i < roleMenus.size(); i++) {
-//                sysRoleMapper.deleteRoleMenu(roleMenus.get(i).getId());
-//            }
-//        }
-
-
 
     }
 

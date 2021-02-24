@@ -65,7 +65,7 @@ public class RoleController {
     }
     // 更新角色菜单
     @PostMapping("/updateRoleMenu")
-    public ServerResponse updateRoleMenu(@RequestParam(value = "oldMenuIds", required = false) Long[] oldMenuIds, @RequestParam(value = "newMenuIds", required = false, defaultValue = "") Long[] newMenusIds, Long roleId) {
+    public ServerResponse updateRoleMenu(@RequestParam(value = "oldMenuIds", required = false, defaultValue = "") Long[] oldMenuIds, @RequestParam(value = "newMenuIds", required = false, defaultValue = "") Long[] newMenusIds, Long roleId) {
         if (Objects.isNull(roleId)) {
             return ServerResponse.createByErrorMessage("参数为空!");
         }
