@@ -59,7 +59,7 @@ public class SysRoleService {
         // 新增菜单为空情况，则直接返回
         if (newMenuIds == null || newMenuIds.length == 0) {
             logger.info("新增菜单为空!");
-            return;
+//            return;
         }
         List<RoleMenu> roleMenus = sysRoleMapper.getRoleMenuByRoleId(roleId);
         roleMenus = CollectionUtils.isEmpty(roleMenus) ? Lists.newArrayList() : roleMenus;
@@ -67,9 +67,10 @@ public class SysRoleService {
         // 判断oldMenuIds是否空
         // 1、为空则更新掉roleMenus
         if (oldMenuIds == null || oldMenuIds.length == 0) {
-
+            logger.info("oldMenuIds为空");
             // newMenuIds小于roleMenus，则更新后删除
             if (newMenuIds.length < roleMenus.size()) {
+                logger.info("newMenuIds小于roleMenus，则更新后删除");
                 // 覆盖更新
                 for (int i = 0; i < newMenuIds.length; i++) {
                     sysRoleMapper.updateRoleMenu(new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]));
@@ -79,6 +80,7 @@ public class SysRoleService {
                     sysRoleMapper.deleteRoleMenu(roleMenus.get(i).getId());
                 }
             } else {
+                logger.info("newMenuIds大于roleMenus，则更新后新增");
                 // newMenuIds大于roleMenus，则更新后新增
                 // 更新掉roleMenus
                 for (int i = 0; i < roleMenus.size(); i++) {
@@ -92,10 +94,12 @@ public class SysRoleService {
 
 
         } else {
+            logger.info("oldMenuIds不为空");
             // 2、不为空, 则oldMenuIds与roleMenus求差集
             List<RoleMenu> matchMenus = roleMenus.stream().filter(menu -> !Arrays.stream(oldMenuIds).anyMatch(menuId -> menu.getMenuId().equals(menuId))).collect(Collectors.toList());
             // 1、差集为空说明roleMenus不变化, 新增newMenuIds
             if (CollectionUtils.isEmpty(matchMenus)) {
+                logger.info("差集为空说明roleMenus不变化, 新增newMenuIds");
                 for (int i = 0; i < newMenuIds.length; i++) {
                     sysRoleMapper.saveRoleMenu(new RoleMenu(null, roleId, newMenuIds[i]));
                 }
@@ -103,6 +107,7 @@ public class SysRoleService {
                 // 2、差集不为空
                 // 1、差集大于newMenuIds，则先更新后删除
                 if (matchMenus.size() > newMenuIds.length) {
+                    logger.info("差集大于newMenuIds，则先更新后删除");
                     for (int i = 0; i < newMenuIds.length; i++) {
                         sysRoleMapper.updateRoleMenu(new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]));
                     }
@@ -110,6 +115,7 @@ public class SysRoleService {
                         sysRoleMapper.deleteRoleMenu(matchMenus.get(i).getId());
                     }
                 } else {
+                    logger.info("差集小于等于newMenuIds，则更新后新增");
                     // 2、差集小于等于newMenuIds，则更新后新增
                     for (int i = 0; i < matchMenus.size(); i++) {
                         sysRoleMapper.updateRoleMenu(new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]));
@@ -120,10 +126,6 @@ public class SysRoleService {
                 }
 
             }
-
-
-
-
         }
 
 
