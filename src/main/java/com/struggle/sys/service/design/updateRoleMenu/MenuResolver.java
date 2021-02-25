@@ -16,7 +16,7 @@ public interface MenuResolver {
      * 判断oldMenuIds为空
      * @return
      */
-    boolean hasOldMenuIdsEmpty();
+    default boolean hasOldMenuIdsEmpty() { return false; };
 
     /**
      * oldMenuIds：角色原先的变化菜单权限(参数)
@@ -32,5 +32,4 @@ public interface MenuResolver {
      */
     void operateRoleMenu(List<RoleMenu> roleMenus, Long[] newMenuIds, Long roleId);
 
-    default SysRoleMapper getRoleMapper() { return null; };
 }

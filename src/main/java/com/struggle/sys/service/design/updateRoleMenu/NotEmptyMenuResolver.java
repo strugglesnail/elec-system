@@ -1,5 +1,6 @@
 package com.struggle.sys.service.design.updateRoleMenu;
 
+import com.struggle.sys.mapper.SysRoleMapper;
 import com.struggle.sys.model.RoleMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,11 @@ public class NotEmptyMenuResolver implements MenuResolver {
 
 
     private Long[] oldMenuIds;
+    private SysRoleMapper sysRoleMapper;
 
-    public NotEmptyMenuResolver(Long[] oldMenuIds) {
+    public NotEmptyMenuResolver(Long[] oldMenuIds, SysRoleMapper roleMapper) {
         this.oldMenuIds = oldMenuIds;
+        this.sysRoleMapper = roleMapper;
     }
 
     /**
@@ -43,7 +46,7 @@ public class NotEmptyMenuResolver implements MenuResolver {
         if (CollectionUtils.isEmpty(matchMenus)) {
             logger.info("差集为空说明roleMenus不变化, 新增newMenuIds");
             for (int i = 0; i < newMenuIds.length; i++) {
-                getRoleMapper().saveRoleMenu(new RoleMenu(null, roleId, newMenuIds[i]));
+                this.sysRoleMapper.saveRoleMenu(new RoleMenu(null, roleId, newMenuIds[i]));
             }
         } else {
             // 2、差集不为空
@@ -51,19 +54,19 @@ public class NotEmptyMenuResolver implements MenuResolver {
             if (matchMenus.size() > newMenuIds.length) {
                 logger.info("差集大于newMenuIds，则先更新后删除");
                 for (int i = 0; i < newMenuIds.length; i++) {
-                    getRoleMapper().updateRoleMenu(new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]));
+                    this.sysRoleMapper.updateRoleMenu(new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]));
                 }
                 for (int i = newMenuIds.length; i < matchMenus.size(); i++) {
-                    getRoleMapper().deleteRoleMenu(matchMenus.get(i).getId());
+                    this.sysRoleMapper.deleteRoleMenu(matchMenus.get(i).getId());
                 }
             } else {
                 logger.info("差集小于等于newMenuIds，则更新后新增");
                 // 2、差集小于等于newMenuIds，则更新后新增
                 for (int i = 0; i < matchMenus.size(); i++) {
-                    getRoleMapper().updateRoleMenu(new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]));
+                    this.sysRoleMapper.updateRoleMenu(new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]));
                 }
                 for (int i = matchMenus.size(); i < newMenuIds.length; i++) {
-                    getRoleMapper().saveRoleMenu(new RoleMenu(null, roleId, newMenuIds[i]));
+                    this.sysRoleMapper.saveRoleMenu(new RoleMenu(null, roleId, newMenuIds[i]));
                 }
             }
 

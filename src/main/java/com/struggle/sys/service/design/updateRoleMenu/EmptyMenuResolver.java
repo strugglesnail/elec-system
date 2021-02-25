@@ -1,5 +1,6 @@
 package com.struggle.sys.service.design.updateRoleMenu;
 
+import com.struggle.sys.mapper.SysRoleMapper;
 import com.struggle.sys.model.RoleMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +18,11 @@ public class EmptyMenuResolver implements MenuResolver {
 
     // 角色原先的变化菜单权限(参数)
     private Long[] oldMenuIds;
+    private SysRoleMapper sysRoleMapper;
 
-    public EmptyMenuResolver(Long[] oldMenuIds) {
+    public EmptyMenuResolver(Long[] oldMenuIds, SysRoleMapper roleMapper) {
         this.oldMenuIds = oldMenuIds;
+        this.sysRoleMapper = roleMapper;
     }
 
     /**
@@ -38,22 +41,22 @@ public class EmptyMenuResolver implements MenuResolver {
             logger.info("newMenuIds小于roleMenus，则更新后删除");
             // 覆盖更新
             for (int i = 0; i < newMenuIds.length; i++) {
-                getRoleMapper().updateRoleMenu(new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]));
+                this.sysRoleMapper.updateRoleMenu(new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]));
             }
             // roleMenus多余删除
             for (int i = newMenuIds.length; i < roleMenus.size(); i++) {
-                getRoleMapper().deleteRoleMenu(roleMenus.get(i).getId());
+                this.sysRoleMapper.deleteRoleMenu(roleMenus.get(i).getId());
             }
         } else {
             logger.info("newMenuIds大于roleMenus，则更新后新增");
             // newMenuIds大于roleMenus，则更新后新增
             // 更新掉roleMenus
             for (int i = 0; i < roleMenus.size(); i++) {
-                getRoleMapper().updateRoleMenu(new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]));
+                this.sysRoleMapper.updateRoleMenu(new RoleMenu(roleMenus.get(i).getId(), null, newMenuIds[i]));
             }
             // newMenuIds多余新增
             for (int i = roleMenus.size(); i < newMenuIds.length; i++) {
-                getRoleMapper().saveRoleMenu(new RoleMenu(null, roleId, newMenuIds[i]));
+                this.sysRoleMapper.saveRoleMenu(new RoleMenu(null, roleId, newMenuIds[i]));
             }
         }
     }
