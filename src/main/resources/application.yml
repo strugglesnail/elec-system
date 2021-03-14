@@ -1,0 +1,41 @@
+server:
+  port: 8002
+spring:
+  application:
+    name: elec-system  #服务名称
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/electric?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowMultiQueries=true
+    username: root
+    password: 123456
+    type: com.alibaba.druid.pool.DruidDataSource
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848  #nacos的服务注册中心地址
+        username: nacos
+        password: nacos
+  gateway:
+    discovery:
+      locator:
+        enabled: true #让gateway可以发现nacos中的微服务
+    routes:                       # 路由数组[路由 就是指定当请求满足什么条件的时候转到哪个微服务]
+    - id: elec-system           # 当前路由的标识, 要求唯一
+      #uri: lb://elec-system   # lb指的是从nacos中按照名称获取微服务,并遵循负载均衡策略
+      uri: https://blog.csdn.net   # lb指的是从nacos中按照名称获取微服务,并遵循负载均衡策略
+      predicates:                # 断言(就是路由转发要满足的条件)
+      - Path=/csdn        # 当请求路径满足Path指定的规则时,才进行路由转发
+      filters:                   # 过滤器,请求在传递过程中可以通过过滤器对其进行一定的修改
+      - StripPrefix=1             # 转发之前去掉1层路径
+#  redis:
+#    timeout:300
+
+
+mybatis:
+  mapper-locations:
+  - classpath:mapper/**/*.xml
+
+#logging:
+#  level:
+#    com.struggle.sys.mapper: debug
